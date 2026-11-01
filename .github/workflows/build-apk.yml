@@ -1,8 +1,12 @@
-name: Build Keldin IPTV Android TV APK
+name: Build Keldin IPTV v0.3 Android TV APK
 on:
   push:
     branches: [main]
   workflow_dispatch:
+
+concurrency:
+  group: keldin-iptv-android
+  cancel-in-progress: true
 
 permissions:
   contents: write
@@ -58,6 +62,15 @@ jobs:
       - name: Apply playback compatibility and diagnostics patch
         run: python3 patches/fix_player.py
 
+      - name: Add K + Play icon and server format diagnostics
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp patches/StreamProbe.java app/src/main/java/com/keldin/iptv/playback/StreamProbe.java
+          python3 patches/fix_stream_v3.py
+          cp patches/keldin_icon.xml app/src/main/res/drawable/keldin_icon.xml
+          cp patches/keldin_banner.xml app/src/main/res/drawable/keldin_banner.xml
+
       - name: Build Android TV debug APK
         run: gradle --no-daemon --stacktrace :app:assembleDebug
 
@@ -70,7 +83,7 @@ jobs:
           if-no-files-found: error
           retention-days: 30
 
-      - name: Publish v0.2.0 playback diagnostics APK
+      - name: Publish v0.3.0 stream probe APK
         if: success()
         env:
           GH_TOKEN: ${{ github.token }}
@@ -78,14 +91,14 @@ jobs:
         run: |
           set -euo pipefail
           test -s app/build/outputs/apk/debug/app-debug.apk
-          cp app/build/outputs/apk/debug/app-debug.apk keldin-beta.apk
-          if ! gh release view v0.2.0-test --repo "${GITHUB_REPOSITORY}" >/dev/null 2>&1; then
-            gh release create v0.2.0-test \
+          cp app/build/outputs/apk/debug/app-debug.apk keldin-v0.3.apk
+          if ! gh release view v0.3.0-test --repo "${GITHUB_REPOSITORY}" >/dev/null 2>&1; then
+            gh release create v0.3.0-test \
               --repo "${GITHUB_REPOSITORY}" \
               --target main \
-              --title "Keldin IPTV v0.2.0 — Playback diagnostics (Android TV)" \
-              --notes "Testna verzija sa alternativnim HLS/User-Agent načinima, prikazom HTTP grešaka i vanjskim playerom. Instalira se odvojeno od v0.1.0 radi očuvanja prve instalacije. Nije testirana na korisnikovom boxu." \
+              --title "Keldin IPTV v0.3.0 — Stream diagnostics + K Play icon (Android TV)" \
+              --notes "Testna verzija: provjera HTTP odgovora i HLS/MPEG-TS formata na uredjaju, novi K + Play TV logo, zadrzana VLC opcija. Nije testirana na stvarnom Xiaomi Boxu." \
               --prerelease
           fi
-          gh release upload v0.2.0-test keldin-beta.apk \
+          gh release upload v0.3.0-test keldin-v0.3.apk \
             --repo "${GITHUB_REPOSITORY}" --clobber
