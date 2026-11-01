@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   android-debug:
@@ -55,6 +55,9 @@ jobs:
         run: |
           sed -i 's/h\.nowName/h.now/g; s/h\.nextName/h.next/g' app/src/main/java/com/keldin/iptv/ui/GuideAdapter.java
 
+      - name: Apply playback compatibility and diagnostics patch
+        run: python3 patches/fix_player.py
+
       - name: Build Android TV debug APK
         run: gradle --no-daemon --stacktrace :app:assembleDebug
 
@@ -66,3 +69,23 @@ jobs:
           path: app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
           retention-days: 30
+
+      - name: Publish v0.2.0 playback diagnostics APK
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s app/build/outputs/apk/debug/app-debug.apk
+          cp app/build/outputs/apk/debug/app-debug.apk keldin-beta.apk
+          if ! gh release view v0.2.0-test --repo "${GITHUB_REPOSITORY}" >/dev/null 2>&1; then
+            gh release create v0.2.0-test \
+              --repo "${GITHUB_REPOSITORY}" \
+              --target main \
+              --title "Keldin IPTV v0.2.0 — Playback diagnostics (Android TV)" \
+              --notes "Testna verzija sa alternativnim HLS/User-Agent načinima, prikazom HTTP grešaka i vanjskim playerom. Instalira se odvojeno od v0.1.0 radi očuvanja prve instalacije. Nije testirana na korisnikovom boxu." \
+              --prerelease
+          fi
+          gh release upload v0.2.0-test keldin-beta.apk \
+            --repo "${GITHUB_REPOSITORY}" --clobber
