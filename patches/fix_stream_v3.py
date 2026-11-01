@@ -65,6 +65,9 @@ t=b.read_text()
 assert "versionCode 2" in t
 assert "versionName '0.2.0-playback-diagnostics'" in t
 t=t.replace("versionCode 2","versionCode 3")
+# A GitHub-hosted debug build uses an ephemeral signing key; install v0.3 beside v0.2.
+assert "applicationIdSuffix '.beta'" in t
+t=t.replace("applicationIdSuffix '.beta'", "applicationIdSuffix '.gamma'")
 t=t.replace("versionName '0.2.0-playback-diagnostics'","versionName '0.3.0-stream-probe'")
 b.write_text(t)
 
