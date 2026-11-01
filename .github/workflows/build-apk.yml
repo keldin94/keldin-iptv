@@ -1,4 +1,4 @@
-name: Build Keldin IPTV v0.5 Android TV APK
+name: Build Keldin IPTV v0.6 Android TV APK
 on:
   push:
     branches: [main]
@@ -88,6 +88,35 @@ jobs:
           python3 patches/v5_catalog_theme.py
           python3 patches/v5_main.py
 
+      - name: Add v0.6 import wizard, posters and multilingual UI
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p app/src/main/assets
+          cp patches/PlaylistWizardV6.java app/src/main/java/com/keldin/iptv/net/PlaylistWizardV6.java
+          cp patches/PosterAdapterV6.java app/src/main/java/com/keldin/iptv/ui/PosterAdapterV6.java
+          cp patches/I18nV6.java app/src/main/java/com/keldin/iptv/ui/I18n.java
+          cp patches/SettingsBackupV6.java app/src/main/java/com/keldin/iptv/ui/SettingsBackupV6.java
+          python3 patches/v6_core.py
+          python3 patches/v6_main.py
+          python3 patches/v6_settings.py
+          python3 patches/v6_adapters.py
+          python3 patches/v6_player.py
+
+      - name: Load licensed Inter typeface (fall back to Android sans-serif)
+        shell: bash
+        run: |
+          curl -fsSL --retry 2 --max-time 15 \
+            'https://raw.githubusercontent.com/google/fonts/main/ofl/inter/Inter%5Bopsz,wght%5D.ttf' \
+            -o app/src/main/assets/inter_regular.ttf || rm -f app/src/main/assets/inter_regular.ttf
+          test ! -f app/src/main/assets/inter_regular.ttf || test "$(wc -c < app/src/main/assets/inter_regular.ttf)" -gt 20000
+          curl -fsSL --max-time 15 \
+            'https://raw.githubusercontent.com/google/fonts/main/ofl/inter/OFL.txt' \
+            -o app/src/main/assets/INTER_LICENSE.txt || true
+
+      - name: Test large playlists, categories and radio
+        run: bash tests/run_v6_tests.sh
+
       - name: Build Android TV debug APK
         run: gradle --no-daemon --stacktrace :app:assembleDebug
 
@@ -100,7 +129,7 @@ jobs:
           if-no-files-found: error
           retention-days: 30
 
-      - name: Publish v0.5.0 redesigned UI APK
+      - name: Publish v0.6.0 editorial Android TV APK
         if: success()
         env:
           GH_TOKEN: ${{ github.token }}
@@ -108,14 +137,14 @@ jobs:
         run: |
           set -euo pipefail
           test -s app/build/outputs/apk/debug/app-debug.apk
-          cp app/build/outputs/apk/debug/app-debug.apk keldin-v0.5.apk
-          if ! gh release view v0.5.0-test --repo "${GITHUB_REPOSITORY}" >/dev/null 2>&1; then
-            gh release create v0.5.0-test \
+          cp app/build/outputs/apk/debug/app-debug.apk keldin-v0.6.apk
+          if ! gh release view v0.6.0-test --repo "${GITHUB_REPOSITORY}" >/dev/null 2>&1; then
+            gh release create v0.6.0-test \
               --repo "${GITHUB_REPOSITORY}" \
               --target main \
-              --title "Keldin IPTV v0.5.0 — New dashboard and minimal Android TV experience" \
-              --notes "Testna verzija: novi pocetni ekran sa TV/filmovi/serije/postavke, lijeve kategorije, nazivi kanala, bez ukrasnih kvadrata ispod logotipa, zajednicki katalog za manje memorije, lokalna crash dijagnostika. Nije potvrdeno na Xiaomi Boxu." \
+              --title "Keldin IPTV v0.6.0 — Editorial Cinema Android TV beta" \
+              --notes "Android TV beta v0.6: English default + 15 languages, TV/Films/Series/Radio, category filtering on import with progress feedback, last-channel launch, posters, EPG side panels, five palettes, settings descriptions and low-memory catalog. Hardware playback unverified." \
               --prerelease
           fi
-          gh release upload v0.5.0-test keldin-v0.5.apk \
+          gh release upload v0.6.0-test keldin-v0.6.apk \
             --repo "${GITHUB_REPOSITORY}" --clobber
