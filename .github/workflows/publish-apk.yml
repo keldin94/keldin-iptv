@@ -1,0 +1,42 @@
+name: Publish Keldin IPTV APK (direct link)
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/publish-apk.yml'
+
+permissions:
+  actions: read
+  contents: write
+
+jobs:
+  publish-debug-apk:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download verified successful APK artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/keldin
+          gh run download 41338988022 --repo "${GITHUB_REPOSITORY}" --name Keldin-IPTV-Full-Preview-APK --dir /tmp/keldin
+          test -s /tmp/keldin/app-debug.apk
+          cp /tmp/keldin/app-debug.apk /tmp/keldin/keldin.apk
+
+      - name: Publish Android TV test APK to GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! gh release view v0.1.0-test --repo "${GITHUB_REPOSITORY}" >/dev/null 2>&1; then
+            gh release create v0.1.0-test \
+              --repo "${GITHUB_REPOSITORY}" \
+              --target main \
+              --title "Keldin IPTV v0.1.0 — Full Preview (Android TV)" \
+              --notes "Testna Android TV verzija, nije provjerena na Xiaomi Box uređaju. Ne uključuje IPTV kanale ni pristupne podatke. Ovo je debug APK, nije Google Play produkcijsko izdanje." \
+              --prerelease
+          fi
+          gh release upload v0.1.0-test /tmp/keldin/keldin.apk \
+            --repo "${GITHUB_REPOSITORY}" --clobber
