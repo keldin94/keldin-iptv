@@ -110,6 +110,9 @@ add='''    private String playbackModeName() {
     }
 '''
 change(anchor,add+anchor)
+change('''        if(key==KeyEvent.KEYCODE_DPAD_CENTER||key==KeyEvent.KEYCODE_ENTER){showControls();return true;}''',
+       '''        if(key==KeyEvent.KEYCODE_DPAD_CENTER||key==KeyEvent.KEYCODE_ENTER){showOptions();return true;}''')
+change('''OK  Info     MENU  Opcije''','''OK  Opcije     MENU  Opcije''')
 p.write_text(s)
 print('Player fix applied',len(s),'characters')
 
