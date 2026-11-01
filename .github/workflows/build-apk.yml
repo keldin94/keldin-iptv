@@ -97,11 +97,14 @@ jobs:
           cp patches/PosterAdapterV6.java app/src/main/java/com/keldin/iptv/ui/PosterAdapterV6.java
           cp patches/I18nV6.java app/src/main/java/com/keldin/iptv/ui/I18n.java
           cp patches/SettingsBackupV6.java app/src/main/java/com/keldin/iptv/ui/SettingsBackupV6.java
+          cp patches/SeriesBrowserV6.java app/src/main/java/com/keldin/iptv/ui/SeriesBrowserV6.java
           python3 patches/v6_core.py
           python3 patches/v6_main.py
           python3 patches/v6_settings.py
           python3 patches/v6_adapters.py
           python3 patches/v6_player.py
+          python3 patches/v6_localize.py
+          python3 patches/v6_polish.py
 
       - name: Load licensed Inter typeface (fall back to Android sans-serif)
         shell: bash
