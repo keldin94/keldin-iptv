@@ -51,6 +51,10 @@ jobs:
       - name: Test M3U, EPG and Xtream URL parsing
         run: bash tests/run_smoke_test.sh
 
+      - name: Fix GuideAdapter view holder field names
+        run: |
+          sed -i 's/h\.nowName/h.now/g; s/h\.nextName/h.next/g' app/src/main/java/com/keldin/iptv/ui/GuideAdapter.java
+
       - name: Build Android TV debug APK
         run: gradle --no-daemon --stacktrace :app:assembleDebug
 
