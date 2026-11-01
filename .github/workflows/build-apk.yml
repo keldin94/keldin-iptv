@@ -1,4 +1,4 @@
-name: Build Keldin IPTV v0.3 Android TV APK
+name: Build Keldin IPTV v0.4 Android TV APK
 on:
   push:
     branches: [main]
@@ -71,6 +71,13 @@ jobs:
           cp patches/keldin_icon.xml app/src/main/res/drawable/keldin_icon.xml
           cp patches/keldin_banner.xml app/src/main/res/drawable/keldin_banner.xml
 
+      - name: Add TV channel/category/EPG overlay and remote exit confirmation
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp patches/TvSidePanel.java app/src/main/java/com/keldin/iptv/playback/TvSidePanel.java
+          python3 patches/overlay_v4.py
+
       - name: Build Android TV debug APK
         run: gradle --no-daemon --stacktrace :app:assembleDebug
 
@@ -83,7 +90,7 @@ jobs:
           if-no-files-found: error
           retention-days: 30
 
-      - name: Publish v0.3.0 stream probe APK
+      - name: Publish v0.4.0 TV navigation APK
         if: success()
         env:
           GH_TOKEN: ${{ github.token }}
@@ -91,14 +98,14 @@ jobs:
         run: |
           set -euo pipefail
           test -s app/build/outputs/apk/debug/app-debug.apk
-          cp app/build/outputs/apk/debug/app-debug.apk keldin-v0.3.apk
-          if ! gh release view v0.3.0-test --repo "${GITHUB_REPOSITORY}" >/dev/null 2>&1; then
-            gh release create v0.3.0-test \
+          cp app/build/outputs/apk/debug/app-debug.apk keldin-v0.4.apk
+          if ! gh release view v0.4.0-test --repo "${GITHUB_REPOSITORY}" >/dev/null 2>&1; then
+            gh release create v0.4.0-test \
               --repo "${GITHUB_REPOSITORY}" \
               --target main \
-              --title "Keldin IPTV v0.3.0 — Stream diagnostics + K Play icon (Android TV)" \
-              --notes "Testna verzija: provjera HTTP odgovora i HLS/MPEG-TS formata na uredjaju, novi K + Play TV logo, zadrzana VLC opcija. Nije testirana na stvarnom Xiaomi Boxu." \
+              --title "Keldin IPTV v0.4.0 — Channel/categories and EPG side panels (Android TV)" \
+              --notes "Testna verzija: D-pad lijevo otvara kanale, dodatno lijevo kategorije, desno EPG; OK za izbor. Potvrda izlaska i pamcenje ispravnog video nacina. K + Play logo. Nije testirano na stvarnom Xiaomi Boxu." \
               --prerelease
           fi
-          gh release upload v0.3.0-test keldin-v0.3.apk \
+          gh release upload v0.4.0-test keldin-v0.4.apk \
             --repo "${GITHUB_REPOSITORY}" --clobber
