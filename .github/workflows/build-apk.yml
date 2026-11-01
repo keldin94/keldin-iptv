@@ -1,4 +1,4 @@
-name: Build Keldin IPTV v0.4 Android TV APK
+name: Build Keldin IPTV v0.5 Android TV APK
 on:
   push:
     branches: [main]
@@ -78,6 +78,16 @@ jobs:
           cp patches/TvSidePanel.java app/src/main/java/com/keldin/iptv/playback/TvSidePanel.java
           python3 patches/overlay_v4.py
 
+      - name: Apply redesigned main UI, logo fixes and crash diagnostics
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp patches/LogoLoaderV5.java app/src/main/java/com/keldin/iptv/ui/LogoLoader.java
+          cp patches/CategoryAdapterV5.java app/src/main/java/com/keldin/iptv/ui/CategoryAdapter.java
+          cp patches/CrashReporterV5.java app/src/main/java/com/keldin/iptv/ui/CrashReporter.java
+          python3 patches/v5_catalog_theme.py
+          python3 patches/v5_main.py
+
       - name: Build Android TV debug APK
         run: gradle --no-daemon --stacktrace :app:assembleDebug
 
@@ -90,7 +100,7 @@ jobs:
           if-no-files-found: error
           retention-days: 30
 
-      - name: Publish v0.4.0 TV navigation APK
+      - name: Publish v0.5.0 redesigned UI APK
         if: success()
         env:
           GH_TOKEN: ${{ github.token }}
@@ -98,14 +108,14 @@ jobs:
         run: |
           set -euo pipefail
           test -s app/build/outputs/apk/debug/app-debug.apk
-          cp app/build/outputs/apk/debug/app-debug.apk keldin-v0.4.apk
-          if ! gh release view v0.4.0-test --repo "${GITHUB_REPOSITORY}" >/dev/null 2>&1; then
-            gh release create v0.4.0-test \
+          cp app/build/outputs/apk/debug/app-debug.apk keldin-v0.5.apk
+          if ! gh release view v0.5.0-test --repo "${GITHUB_REPOSITORY}" >/dev/null 2>&1; then
+            gh release create v0.5.0-test \
               --repo "${GITHUB_REPOSITORY}" \
               --target main \
-              --title "Keldin IPTV v0.4.0 — Channel/categories and EPG side panels (Android TV)" \
-              --notes "Testna verzija: D-pad lijevo otvara kanale, dodatno lijevo kategorije, desno EPG; OK za izbor. Potvrda izlaska i pamcenje ispravnog video nacina. K + Play logo. Nije testirano na stvarnom Xiaomi Boxu." \
+              --title "Keldin IPTV v0.5.0 — New dashboard and minimal Android TV experience" \
+              --notes "Testna verzija: novi pocetni ekran sa TV/filmovi/serije/postavke, lijeve kategorije, nazivi kanala, bez ukrasnih kvadrata ispod logotipa, zajednicki katalog za manje memorije, lokalna crash dijagnostika. Nije potvrdeno na Xiaomi Boxu." \
               --prerelease
           fi
-          gh release upload v0.4.0-test keldin-v0.4.apk \
+          gh release upload v0.5.0-test keldin-v0.5.apk \
             --repo "${GITHUB_REPOSITORY}" --clobber
