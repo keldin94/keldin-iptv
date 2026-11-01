@@ -95,7 +95,7 @@ add='''    private String playbackModeName() {
             if(httpCode==429)return "HTTP 429 – ograničenje servera";
             return "HTTP "+httpCode+" – greška servera";
         }
-        return error.errorCodeName+(origin.isEmpty()?"":" / "+origin);
+        return error.getErrorCodeName()+(origin.isEmpty()?"":" / "+origin);
     }
     private void openExternalPlayer() {
         if(current==null)return;
