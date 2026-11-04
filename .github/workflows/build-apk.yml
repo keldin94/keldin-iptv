@@ -139,6 +139,16 @@ jobs:
           set -euo pipefail
           python3 patches/v8_large_playlist.py
 
+      - name: Improve IPTV connection reliability and category chooser for v0.8.1
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp patches/PlaylistImportHttpV81.java app/src/main/java/com/keldin/iptv/net/PlaylistImportHttpV81.java
+          python3 patches/v81_network_and_chooser.py
+
+      - name: Test retry after timeout and navigable TV category checkboxes
+        run: bash tests/run_v81_import_tests.sh
+
       - name: Test the real-size 183104-item M3U import
         run: bash tests/run_v8_large_playlist.sh
 
@@ -169,7 +179,7 @@ jobs:
         if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: Keldin-IPTV-v0.7-Updater-Preview-APK
+          name: Keldin-IPTV-current-debug-APK
           path: app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
           retention-days: 30
