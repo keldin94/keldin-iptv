@@ -7,6 +7,7 @@ def rep(old,new,label):
  s=s.replace(old,new,1)
 rep("    private int selectedSettingsTab=0;",'''    private int selectedSettingsTab=0;
     private TextView[] settingsIconsV93;
+    private boolean settingsOpenFocusV93=false;
     private String settingsScopeV93(int i){
         String lang=store==null?"en":store.language();
         String[] en={
@@ -65,9 +66,11 @@ rep("    private int selectedSettingsTab=0;",'''    private int selectedSettings
 rep('''        page=destination;searchQuery="";
         selectedGroup=getSharedPreferences("keldin_settings",MODE_PRIVATE)''',
 '''        page=destination;searchQuery="";
-        if("Postavke".equals(page))
+        if("Postavke".equals(page)){
+            settingsOpenFocusV93=true;
             selectedSettingsTab=getSharedPreferences("keldin_settings",MODE_PRIVATE)
                 .getInt("settings_section_v93",0);
+        }
         selectedGroup=getSharedPreferences("keldin_settings",MODE_PRIVATE)''',"restore saved settings section")
 start=s.index('''        android.widget.HorizontalScrollView navigation=new android.widget.HorizontalScrollView(this);''')
 end=s.index('''        ScrollView scroll=new ScrollView(this);''',start)
@@ -152,6 +155,16 @@ settings=s[methodStart:methodEnd]
 assert "        LinearLayout body=Ui.vertical(this);" in settings
 settings=settings.replace("        LinearLayout body=Ui.vertical(this);",
     "        LinearLayout body=Ui.vertical(this);\n        settingsBodyRefV93[0]=body;",1)
+closing="        content.addView(layout,new LinearLayout.LayoutParams(-1,0,1));"
+assert closing in settings
+settings=settings.replace(closing,closing+"""
+        if(settingsOpenFocusV93){
+            settingsOpenFocusV93=false;
+            int selectedIndex=Math.max(0,Math.min(6,selectedSettingsTab));
+            settingsIconsV93[selectedIndex].post(
+                ()->settingsIconsV93[selectedIndex].requestFocus());
+        }
+""",1)
 s=s[:methodStart]+settings+s[methodEnd:]
 p.write_text(s)
 print("v0.9.3: icon-only 7-section TV settings navigation, labels/scopes under selected icon, saved section, D-pad focus")
