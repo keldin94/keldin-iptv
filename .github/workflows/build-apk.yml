@@ -191,6 +191,9 @@ jobs:
       - name: Test v0.9.2 remote buttons, channel logos and stable package identity
         run: bash tests/run_v92_regression.sh
 
+      - name: Audit section selector, settings focus and home TV layout
+        run: python3 tests/v93_audit.py
+
       - name: Test v0.9 TV remote, EPG autodetection, languages and tab settings
         run: bash tests/run_v9_tv_ux_tests.sh
 
