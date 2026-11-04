@@ -5,8 +5,8 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: keldin-iptv-android
-  cancel-in-progress: true
+  group: keldin-iptv-hotfix-v061
+  cancel-in-progress: false
 
 permissions:
   contents: write
