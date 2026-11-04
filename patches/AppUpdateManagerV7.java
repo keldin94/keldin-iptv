@@ -63,6 +63,8 @@ public final class AppUpdateManager {
     }
     public static void check(Activity activity,boolean manual){
         if(activity==null||activity.isFinishing()||activity.isDestroyed())return;
+        // Do not interrupt a full-screen player activity in the background.
+        if(!manual&&!activity.hasWindowFocus())return;
         if(BuildConfig.APPLICATION_ID.endsWith(".updatepreview")){
             if(manual)showMessage(activity,"Updater preview",
                 "This is a test build. In-place updates require the signed stable app. "+
@@ -124,6 +126,7 @@ public final class AppUpdateManager {
                 if(!manual&&version.equals(prefs(activity).getString("dismissed_version","")))return;
                 MAIN.post(()->{
                     if(activity.isFinishing()||activity.isDestroyed())return;
+                    if(!manual&&!activity.hasWindowFocus())return;
                     String intro="Version "+version+" is available.\n\nYour playlists, favorites and settings stay on this device.";
                     String excerpt=notes.isEmpty()?"":("\n\nWhat's new:\n"+
                         notes.substring(0,Math.min(notes.length(),900)));
