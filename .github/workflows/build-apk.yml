@@ -165,6 +165,29 @@ jobs:
           if-no-files-found: error
           retention-days: 30
 
+      - name: Verify persistent-signing release build with disposable CI test key
+        shell: bash
+        run: |
+          set -euo pipefail
+          TEMP_KEY="${RUNNER_TEMP}/keldin-ci-test-keystore.jks"
+          TEMP_PASS="$(openssl rand -hex 20)"
+          keytool -genkeypair -noprompt \
+            -keystore "${TEMP_KEY}" -alias ci-test \
+            -storepass "${TEMP_PASS}" -keypass "${TEMP_PASS}" \
+            -dname "CN=Keldin CI Signing Verification" \
+            -keyalg RSA -keysize 2048 -validity 365
+          export KELDIN_SIGNING_FILE="${TEMP_KEY}"
+          export KELDIN_SIGNING_STORE_PASSWORD="${TEMP_PASS}"
+          export KELDIN_SIGNING_ALIAS="ci-test"
+          export KELDIN_SIGNING_KEY_PASSWORD="${TEMP_PASS}"
+          gradle --no-daemon --stacktrace :app:assembleRelease
+          SIGNER="$(find "${ANDROID_HOME}/build-tools" -type f -name apksigner | sort -V | tail -n 1)"
+          "${SIGNER}" verify --verbose app/build/outputs/apk/release/app-release.apk
+          APK_DUMP="$(find "${ANDROID_HOME}/build-tools" -type f -name aapt | sort -V | tail -n 1)"
+          "${APK_DUMP}" dump badging app/build/outputs/apk/release/app-release.apk | grep "package: name='com.keldin.iptv'"
+          rm -f "${TEMP_KEY}"
+          echo "Stable release Gradle signing verified with disposable key (NOT for production)."
+
       - name: Publish v0.7 updater preview APK
         if: success()
         env:
