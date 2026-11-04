@@ -10,7 +10,7 @@ anchor='''        <activity android:name=".playback.PlayerActivity"'''
 assert anchor in m
 m=m.replace(anchor,'''        <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="\${applicationId}.updateprovider"
+            android:authorities="${applicationId}.updateprovider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
