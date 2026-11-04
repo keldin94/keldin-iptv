@@ -196,7 +196,7 @@ public final class TvPlaybackOptionsV94 {
         dialog.show();
         Window w=dialog.getWindow();
         if(w!=null){
-            w.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            w.setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
             w.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
             w.setDimAmount(.61f);
             int sw=activity.getResources().getDisplayMetrics().widthPixels;
