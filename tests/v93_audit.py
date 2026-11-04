@@ -12,5 +12,6 @@ for a,b in [
 ("private void showHome()","private void landingTile("),
 ("private void showChannelGrid(boolean guideMode)","private ArrayList<Channel> filterSection("),
 ("private void showSettingsV6()","private void headingV6("),
+("private void showSearch()","private void showLists()"),
 ("private void openMediaDetails(","private void showGuide()")
 ]:region(a,b)
