@@ -29,6 +29,8 @@ assert 'ContentFilterV93.isExplicit(ch.group,ch.name)' in m
 assert 'getBoolean("hide_adult_content_v93",true)' in m
 assert 'java.util.Collections.reverse(section)' in m
 assert 'hidden_media_items_v93' in m and 'hidden_series_v93' in m
+assert 'filteredChannelsSafeV93(String query)' in m
+assert m.count('filteredChannelsSafeV93(searchQuery)')==2
 assert 'public static String seriesBase(Channel selected)' in s
 assert 'UiLocaleV9.translate(this,"Choose categories to display")' in m
 print("PASS: home hero cards, unclipped focus, tabs, category management, explicit blocking, preferences")
