@@ -1,4 +1,4 @@
-name: Build Keldin IPTV v0.7 Update Preview
+name: Build Keldin IPTV Android TV
 on:
   push:
     branches: [main]
@@ -11,8 +11,8 @@ on:
         default: false
 
 concurrency:
-  group: keldin-iptv-v07
-  cancel-in-progress: ${{ github.event_name != 'workflow_dispatch' }}
+  group: keldin-iptv-stable
+  cancel-in-progress: false
 
 permissions:
   contents: write
@@ -133,6 +133,15 @@ jobs:
           cp patches/update_paths_v7.xml app/src/main/res/xml/update_paths.xml
           python3 patches/v7_updater_integration.py
 
+      - name: Expand playlist capacity and keep country selection
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 patches/v8_large_playlist.py
+
+      - name: Test the real-size 183104-item M3U import
+        run: bash tests/run_v8_large_playlist.sh
+
       - name: Test updater version ordering and installer manifest
         run: bash tests/run_update_v7_tests.sh
 
@@ -188,26 +197,8 @@ jobs:
           rm -f "${TEMP_KEY}"
           echo "Stable release Gradle signing verified with disposable key (NOT for production)."
 
-      - name: Publish v0.7 updater preview APK
-        if: success()
-        env:
-          GH_TOKEN: ${{ github.token }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          cp app/build/outputs/apk/debug/app-debug.apk keldin-v0.7-preview.apk
-          if ! gh release view v0.7.0-preview --repo "${GITHUB_REPOSITORY}" >/dev/null 2>&1; then
-            gh release create v0.7.0-preview \
-              --repo "${GITHUB_REPOSITORY}" --target "${GITHUB_SHA}" \
-              --title "Keldin IPTV v0.7.0 — Updater Preview (Android TV)" \
-              --notes "Preview build: app update UI and GitHub version checker. A dedicated signing key is required for seamless stable updates; preview builds do not preserve data across separate package IDs." \
-              --prerelease
-          fi
-          gh release upload v0.7.0-preview keldin-v0.7-preview.apk \
-            --repo "${GITHUB_REPOSITORY}" --clobber
-
       - name: Sign and publish stable release
-        if: ${{ github.event_name == 'workflow_dispatch' && inputs.publish_stable }}
+        if: ${{ (github.event_name == 'workflow_dispatch' && inputs.publish_stable) || (github.event_name == 'push' && contains(github.event.head_commit.message, '[release]')) }}
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
@@ -228,14 +219,21 @@ jobs:
           export KELDIN_SIGNING_KEY_PASSWORD="${KEY_PASSWORD}"
           printf '%s' "${KEYSTORE_BASE64}" | base64 --decode > "${KELDIN_SIGNING_FILE}"
           chmod 600 "${KELDIN_SIGNING_FILE}"
-          gradle --no-daemon --stacktrace :app:assembleRelease
+          # A disposable CI test key was used above. Rebuild cleanly to guarantee
+          # the published binary uses only the user's permanent signing key.
+          gradle --no-daemon --stacktrace clean :app:assembleRelease
 
           cp app/build/outputs/apk/release/app-release.apk keldin-iptv.apk
           SIGNER="$(find "${ANDROID_HOME}/build-tools" -type f -name apksigner | sort -V | tail -n 1)"
           "${SIGNER}" verify --verbose keldin-iptv.apk
           sha256sum keldin-iptv.apk > keldin-iptv.apk.sha256
 
-          VERSION="v0.7.0"
+          APK_DUMP="$(find "${ANDROID_HOME}/build-tools" -type f -name aapt | sort -V | tail -n 1)"
+          PACKAGE_LINE="$("${APK_DUMP}" dump badging keldin-iptv.apk | grep "^package:")"
+          printf '%s\n' "${PACKAGE_LINE}" | grep -q "name='com.keldin.iptv'"
+          APP_VERSION="$(printf '%s\n' "${PACKAGE_LINE}" | sed -n "s/.*versionName='\([^']*\)'.*/\1/p")"
+          test -n "${APP_VERSION}"
+          VERSION="v${APP_VERSION}"
           if gh release view "${VERSION}" --repo "${GITHUB_REPOSITORY}" >/dev/null 2>&1; then
             echo "::error::Stable release ${VERSION} already exists. Refusing to replace a signed public APK."
             exit 1
@@ -243,7 +241,7 @@ jobs:
           gh release create "${VERSION}" \
             --repo "${GITHUB_REPOSITORY}" \
             --target "${GITHUB_SHA}" \
-            --title "Keldin IPTV 0.7.0 — Android TV" \
-            --notes "Stable signed Android TV release. Future versions with the same package and signing certificate can update in place while keeping local playlists." \
+            --title "Keldin IPTV ${APP_VERSION} — Android TV" \
+            --notes "Stable Android TV release. Signed with the permanent Keldin key. In-app updates from newer stable versions preserve playlists and favorites. Imported IPTV playlists can be over 183104 entries; users can select countries before saving." \
             keldin-iptv.apk keldin-iptv.apk.sha256
           rm -f "${KELDIN_SIGNING_FILE}"
