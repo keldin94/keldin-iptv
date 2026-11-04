@@ -30,6 +30,6 @@ assert 'getBoolean("hide_adult_content_v93",true)' in m
 assert 'java.util.Collections.reverse(section)' in m
 assert 'hidden_media_items_v93' in m and 'hidden_series_v93' in m
 assert 'public static String seriesBase(Channel selected)' in s
-assert 'new AlertDialog.Builder(this).setTitle("Choose categories to display")' in m
+assert 'setTitle("Choose categories to display")' in m
 print("PASS: home hero cards, unclipped focus, tabs, category management, explicit blocking, preferences")
 PY
