@@ -13,11 +13,13 @@ end=s.index('    }\n    private void save(',start)
 fragment=s[start:end]
 assert '.setMultiChoiceItems(labels,enabled,' in fragment
 # Keep the original button logic; only replace setMessage/setMultiChoiceItems
-fragment=fragment.replace('''        new AlertDialog.Builder(activity)
-            .setTitle("3/3 · Choose countries and content")
-            .setMessage(explanation)
-            .setMultiChoiceItems(labels,enabled,(dialog,index,checked)->enabled[index]=checked)
-''','''        LinearLayout selector=Ui.vertical(activity);
+import re
+dialog_pattern=r'''        new AlertDialog\.Builder\(activity\)
+            \.setTitle\("3/3 · Choose countries and content"\)
+            \.setMessage\([^\n]+\)
+            \.setMultiChoiceItems\(labels,enabled,\(dialog,index,checked\)->enabled\[index\]=checked\)
+'''
+dialog_view='''        LinearLayout selector=Ui.vertical(activity);
         int pad=Ui.dp(activity,14);
         selector.setPadding(pad,pad,pad,Ui.dp(activity,8));
         TextView guidance=Ui.text(activity,explanation,14,Ui.MUTED,false);
@@ -47,7 +49,9 @@ fragment=fragment.replace('''        new AlertDialog.Builder(activity)
         AlertDialog choiceDialog=new AlertDialog.Builder(activity)
             .setTitle("3/3 · Choose countries and content")
             .setView(selector)
-''',1)
+'''
+fragment,replacements=re.subn(dialog_pattern,lambda match:dialog_view,fragment,count=1)
+assert replacements==1, "TV chooser dialog not replaced"
 fragment=fragment.replace('''            .setCancelable(false).show();''','''            .setCancelable(false).create();
         choiceDialog.show();
         if(checks.getChildCount()>0)checks.getChildAt(0).requestFocus();''',1)
