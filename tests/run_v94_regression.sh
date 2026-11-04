@@ -27,6 +27,8 @@ assert 'callback.onSelected(dialog,index);' in ui
 assert 'category.setLetterSpacing(.14f)' in ui
 assert 'item.setFocusable(true);' in ui
 assert 'dialog.setOnShowListener(' in ui
+assert 'dialog.setOnDismissListener(' in ui
+assert 'this::scheduleHide' in p
 assert 'dialog.setCanceledOnTouchOutside(true);' in ui
 assert 'w.setDimAmount(.61f);' in ui
 assert 'actions.length&&i<SYMBOLS.length' in ui
