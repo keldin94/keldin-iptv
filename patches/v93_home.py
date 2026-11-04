@@ -12,7 +12,7 @@ sub('''        TextView add=Ui.button(this,"☷  "+tr("lists"),()->navigate("Moj
 needle='''        title.setText("Početna".equals(page)?"KELDIN IPTV":displayPage(page));'''
 sub(needle,needle+'''
         // Existing vector brand mark, not a new image or external font.
-        android.graphics.drawable.Drawable brand=getDrawable(R.drawable.keldin_icon);
+        android.graphics.drawable.Drawable brand=getDrawable(com.keldin.iptv.R.drawable.keldin_icon);
         if(brand!=null){
             brand.setBounds(0,0,Ui.dp(this,39),Ui.dp(this,39));
             title.setCompoundDrawables(brand,null,null,null);
