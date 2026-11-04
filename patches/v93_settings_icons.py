@@ -137,10 +137,10 @@ new='''        // Icon-only tabs are always visible on Android TV. Selecting one
             settingsIconsV93[i]=tab;
         }
         layout.addView(tabRow,Ui.lp(this,-1,73));
-        TextView chosen=Ui.text(this,tabNames[selectedSettingsTab],17,Ui.WHITE,true);
-        chosen.setPadding(Ui.dp(this,17),Ui.dp(this,5),
+        TextView chosenSectionLabel=Ui.text(this,tabNames[selectedSettingsTab],17,Ui.WHITE,true);
+        chosenSectionLabel.setPadding(Ui.dp(this,17),Ui.dp(this,5),
             Ui.dp(this,14),Ui.dp(this,1));
-        layout.addView(chosen);
+        layout.addView(chosenSectionLabel);
         TextView scope=Ui.text(this,settingsScopeV93(selectedSettingsTab),13,Ui.MUTED,false);
         scope.setPadding(Ui.dp(this,17),0,Ui.dp(this,14),Ui.dp(this,11));
         layout.addView(scope);
