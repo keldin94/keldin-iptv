@@ -158,6 +158,7 @@ jobs:
           python3 patches/v9_settings.py
           python3 patches/v9_player_localize.py
           python3 patches/v9_network.py
+          python3 patches/v9_localization_privacy.py
           python3 patches/v9_version.py
 
       - name: Test v0.9 TV remote, EPG autodetection, languages and tab settings
