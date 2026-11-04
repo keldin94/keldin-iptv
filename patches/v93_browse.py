@@ -124,7 +124,7 @@ sub('''        content.addView(main,new LinearLayout.LayoutParams(-1,0,1));
 anchor='''    private void openMediaDetails(Channel media){'''
 assert anchor in s
 newMethods='''    private void manageContentCategoriesV93(String kind){
-        LinkedHashMap<String,String[]> groups=new LinkedHashMap<>();
+        java.util.LinkedHashMap<String,String[]> groups=new java.util.LinkedHashMap<>();
         for(Channel ch:store.channels()){
             if(!kind.equals(ch.kind))continue;
             String group=ch.group==null?"":ch.group;
