@@ -191,6 +191,22 @@ jobs:
       - name: Test v0.9.2 remote buttons, channel logos and stable package identity
         run: bash tests/run_v92_regression.sh
 
+      - name: Create v0.9.3 home, icon settings and filtered media browser
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp patches/ContentFilterV93.java app/src/main/java/com/keldin/iptv/data/ContentFilterV93.java
+          python3 patches/v93_series.py
+          python3 patches/v93_home.py
+          python3 patches/v93_settings_icons.py
+          python3 patches/v93_browse.py
+          python3 patches/v93_settings_content.py
+          python3 patches/v93_version.py
+
+      - name: Test v0.9.3 adult filter, categories, home, focus and settings persistence
+        run: bash tests/run_v93_regression.sh
+
+
       - name: Audit section selector, settings focus and home TV layout
         run: python3 tests/v93_audit.py
 
