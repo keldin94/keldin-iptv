@@ -18,7 +18,7 @@ for path,keys in targets.items():
     print(f"\n=== {path} ({len(lines)} lines) ===")
     indexes=set()
     for i,line in enumerate(lines):
-        if any(re.search(k,line,re.I) for k in keys):
+        if any(re.search(re.escape(k),line,re.I) for k in keys):
             indexes.update(range(max(0,i-2),min(len(lines),i+5)))
     if path.endswith("PlayerActivity.java"):
         indexes.update(range(0,min(130,len(lines))))
