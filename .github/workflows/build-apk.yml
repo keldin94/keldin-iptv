@@ -114,6 +114,7 @@ jobs:
           cp patches/PlaylistWizardV61.java app/src/main/java/com/keldin/iptv/net/PlaylistWizardV6.java
           python3 patches/v61_parser.py
           python3 patches/v61_release.py
+          python3 patches/v61_english_ui.py
           python3 tests/audit_ui_language_v61.py
 
       - name: Test 170K-item playlist with country filtering
