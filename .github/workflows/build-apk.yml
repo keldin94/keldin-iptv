@@ -1,12 +1,18 @@
-name: Build Keldin IPTV v0.6.1 hotfix APK
+name: Build Keldin IPTV v0.7 Update Preview
 on:
   push:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      publish_stable:
+        description: "Publish signed stable release (requires 4 signing secrets)"
+        required: false
+        type: boolean
+        default: false
 
 concurrency:
-  group: keldin-iptv-hotfix-v061
-  cancel-in-progress: false
+  group: keldin-iptv-v07
+  cancel-in-progress: ${{ github.event_name != 'workflow_dispatch' }}
 
 permissions:
   contents: write
@@ -117,6 +123,19 @@ jobs:
           python3 patches/v61_english_ui.py
           python3 tests/audit_ui_language_v61.py
 
+      - name: Add in-app updater and stable signing setup
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p app/src/main/java/com/keldin/iptv/updates app/src/main/res/xml
+          cp patches/AppUpdateManagerV7.java app/src/main/java/com/keldin/iptv/updates/AppUpdateManager.java
+          cp patches/UpdateVersionV7.java app/src/main/java/com/keldin/iptv/updates/UpdateVersion.java
+          cp patches/update_paths_v7.xml app/src/main/res/xml/update_paths.xml
+          python3 patches/v7_updater_integration.py
+
+      - name: Test updater version ordering and installer manifest
+        run: bash tests/run_update_v7_tests.sh
+
       - name: Test 170K-item playlist with country filtering
         run: bash tests/run_v61_tests.sh
 
@@ -141,27 +160,67 @@ jobs:
         if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: Keldin-IPTV-Full-Preview-APK
+          name: Keldin-IPTV-v0.7-Updater-Preview-APK
           path: app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
           retention-days: 30
 
-      - name: Publish v0.6.1 large playlist hotfix APK
+      - name: Publish v0.7 updater preview APK
         if: success()
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
-          test -s app/build/outputs/apk/debug/app-debug.apk
-          cp app/build/outputs/apk/debug/app-debug.apk keldin-v0.6.1.apk
-          if ! gh release view v0.6.1-test --repo "${GITHUB_REPOSITORY}" >/dev/null 2>&1; then
-            gh release create v0.6.1-test \
-              --repo "${GITHUB_REPOSITORY}" \
-              --target main \
-              --title "Keldin IPTV v0.6.1 — Large Playlist Import Hotfix" \
-              --notes "Android TV beta v0.6.1 fixes 150000-entry import rejection: download once to temporary local file, scan country groups with bounded RAM, filter before retaining Channel data. Default import dialog English. Hardware playback still needs user verification." \
+          cp app/build/outputs/apk/debug/app-debug.apk keldin-v0.7-preview.apk
+          if ! gh release view v0.7.0-preview --repo "${GITHUB_REPOSITORY}" >/dev/null 2>&1; then
+            gh release create v0.7.0-preview \
+              --repo "${GITHUB_REPOSITORY}" --target "${GITHUB_SHA}" \
+              --title "Keldin IPTV v0.7.0 — Updater Preview (Android TV)" \
+              --notes "Preview build: app update UI and GitHub version checker. A dedicated signing key is required for seamless stable updates; preview builds do not preserve data across separate package IDs." \
               --prerelease
           fi
-          gh release upload v0.6.1-test keldin-v0.6.1.apk \
+          gh release upload v0.7.0-preview keldin-v0.7-preview.apk \
             --repo "${GITHUB_REPOSITORY}" --clobber
+
+      - name: Sign and publish stable release
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.publish_stable }}
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          KEYSTORE_BASE64: ${{ secrets.KELDIN_KEYSTORE_BASE64 }}
+          STORE_PASSWORD: ${{ secrets.KELDIN_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KELDIN_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KELDIN_KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          : "${KEYSTORE_BASE64:?Missing KELDIN_KEYSTORE_BASE64 secret}"
+          : "${STORE_PASSWORD:?Missing KELDIN_KEYSTORE_PASSWORD secret}"
+          : "${KEY_ALIAS:?Missing KELDIN_KEY_ALIAS secret}"
+          : "${KEY_PASSWORD:?Missing KELDIN_KEY_PASSWORD secret}"
+
+          export KELDIN_SIGNING_FILE="${RUNNER_TEMP}/keldin-release.jks"
+          export KELDIN_SIGNING_STORE_PASSWORD="${STORE_PASSWORD}"
+          export KELDIN_SIGNING_ALIAS="${KEY_ALIAS}"
+          export KELDIN_SIGNING_KEY_PASSWORD="${KEY_PASSWORD}"
+          printf '%s' "${KEYSTORE_BASE64}" | base64 --decode > "${KELDIN_SIGNING_FILE}"
+          chmod 600 "${KELDIN_SIGNING_FILE}"
+          gradle --no-daemon --stacktrace :app:assembleRelease
+
+          cp app/build/outputs/apk/release/app-release.apk keldin-iptv.apk
+          SIGNER="$(find "${ANDROID_HOME}/build-tools" -type f -name apksigner | sort -V | tail -n 1)"
+          "${SIGNER}" verify --verbose keldin-iptv.apk
+          sha256sum keldin-iptv.apk > keldin-iptv.apk.sha256
+
+          VERSION="v0.7.0"
+          if gh release view "${VERSION}" --repo "${GITHUB_REPOSITORY}" >/dev/null 2>&1; then
+            echo "::error::Stable release ${VERSION} already exists. Refusing to replace a signed public APK."
+            exit 1
+          fi
+          gh release create "${VERSION}" \
+            --repo "${GITHUB_REPOSITORY}" \
+            --target "${GITHUB_SHA}" \
+            --title "Keldin IPTV 0.7.0 — Android TV" \
+            --notes "Stable signed Android TV release. Future versions with the same package and signing certificate can update in place while keeping local playlists." \
+            keldin-iptv.apk keldin-iptv.apk.sha256
+          rm -f "${KELDIN_SIGNING_FILE}"
