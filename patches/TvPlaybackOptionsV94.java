@@ -100,7 +100,7 @@ public final class TvPlaybackOptionsV94 {
         return words[position];
     }
 
-    public static void show(Activity activity,String channelName,String[] actions,Choice callback){
+    public static void show(Activity activity,String channelName,String[] actions,Choice callback,Runnable onClose){
         if(activity.isFinishing()||activity.isDestroyed())return;
         final Dialog dialog=new Dialog(activity);
         final LinearLayout panel=Ui.vertical(activity);
@@ -184,6 +184,9 @@ public final class TvPlaybackOptionsV94 {
         panel.addView(scroll,new LinearLayout.LayoutParams(-1,0,1f));
         dialog.setContentView(panel);
         dialog.setCanceledOnTouchOutside(true);
+        dialog.setOnDismissListener(d->{
+            if(onClose!=null)onClose.run();
+        });
         dialog.setOnShowListener(d->{
             if(list.getChildCount()>1){
                 View firstItem=list.getChildAt(1);
