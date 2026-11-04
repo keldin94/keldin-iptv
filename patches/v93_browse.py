@@ -57,10 +57,15 @@ sub('''        java.util.HashMap<String,java.util.Set<String>> exclusions=new ja
         boolean hideExplicit=viewingPrefs.getBoolean("hide_adult_content_v93",true);
         java.util.Set<String> hiddenTitles=viewingPrefs.getStringSet(
             "hidden_media_items_v93",java.util.Collections.emptySet());
+        java.util.Set<String> hiddenSeries=viewingPrefs.getStringSet(
+            "hidden_series_v93",java.util.Collections.emptySet());
         for(Channel ch:source){''',"default explicit filter and individual exclusions")
 sub('''            if(store.parentalLocked()&&!store.isContentUnlocked()&&CatalogStore.isAdultCategory(ch.group))continue;
             section.add(ch);''','''            if(hiddenTitles.contains(com.keldin.iptv.data.ContentFilterV93.fingerprint(ch.key())))
                 continue;
+            if("SERIES".equals(ch.kind)&&hiddenSeries.contains(
+                com.keldin.iptv.data.ContentFilterV93.fingerprint(ch.sourceId+"|"+
+                    ch.group+"|"+SeriesBrowserV6.seriesBase(ch))))continue;
             if((hideExplicit||(store.parentalLocked()&&!store.isContentUnlocked())) &&
                     com.keldin.iptv.data.ContentFilterV93.isExplicit(ch.group,ch.name))
                 continue;
@@ -175,7 +180,16 @@ newMethods='''    private void manageContentCategoriesV93(String kind){
         java.util.HashSet<String> hidden=new java.util.HashSet<>(prefs.getStringSet(
             "hidden_media_items_v93",java.util.Collections.emptySet()));
         hidden.add(com.keldin.iptv.data.ContentFilterV93.fingerprint(media.key()));
-        prefs.edit().putStringSet("hidden_media_items_v93",hidden).apply();
+        android.content.SharedPreferences.Editor editor=prefs.edit()
+            .putStringSet("hidden_media_items_v93",hidden);
+        if("SERIES".equals(media.kind)){
+            java.util.HashSet<String> series=new java.util.HashSet<>(prefs.getStringSet(
+                "hidden_series_v93",java.util.Collections.emptySet()));
+            series.add(com.keldin.iptv.data.ContentFilterV93.fingerprint(media.sourceId+"|"+
+                media.group+"|"+SeriesBrowserV6.seriesBase(media)));
+            editor.putStringSet("hidden_series_v93",series);
+        }
+        editor.apply();
         render();
     }
 '''
