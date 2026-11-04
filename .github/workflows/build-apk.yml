@@ -202,6 +202,7 @@ jobs:
           python3 patches/v93_browse.py
           python3 patches/v93_settings_content.py
           python3 patches/v93_localize.py
+          python3 patches/v93_search_filter.py
           python3 patches/v93_version.py
 
       - name: Test v0.9.3 adult filter, categories, home, focus and settings persistence
