@@ -208,6 +208,10 @@ jobs:
       - name: Test v0.9.3 adult filter, categories, home, focus and settings persistence
         run: bash tests/run_v93_regression.sh
 
+      - name: Audit actual player remote and options UI before v0.9.4
+        run: python3 tests/v94_player_audit.py
+
+
 
       - name: Audit section selector, settings focus and home TV layout
         run: python3 tests/v93_audit.py
