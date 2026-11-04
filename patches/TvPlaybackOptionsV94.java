@@ -3,7 +3,6 @@ package com.keldin.iptv.playback;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.view.Gravity;
@@ -14,11 +13,10 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import com.keldin.iptv.ui.Ui;
-import java.util.Locale;
 
 /** Fully D-pad accessible TV options sheet; no native one-line AlertDialog list. */
 public final class TvPlaybackOptionsV94 {
-    public interface Choice { void onSelected(int action); }
+    public interface Choice { void onSelected(android.content.DialogInterface dialog,int action); }
 
     private TvPlaybackOptionsV94() {}
     private static final String[] SYMBOLS={
@@ -142,7 +140,6 @@ public final class TvPlaybackOptionsV94 {
         list.setClipChildren(false);
         list.setClipToPadding(false);
         scroll.addView(list);
-        TextView first=null;
         String[] details=descriptions(activity);
         for(int i=0;i<actions.length&&i<SYMBOLS.length;i++){
             if(i==0||i==4||i==8){
@@ -178,12 +175,11 @@ public final class TvPlaybackOptionsV94 {
             });
             item.setOnClickListener(v->{
                 dialog.dismiss();
-                callback.onSelected(index);
+                callback.onSelected(dialog,index);
             });
             LinearLayout.LayoutParams cell=Ui.lp(activity,-1,64);
             cell.bottomMargin=Ui.dp(activity,5);
             list.addView(item,cell);
-            if(first==null)first=name;
         }
         panel.addView(scroll,new LinearLayout.LayoutParams(-1,0,1f));
         dialog.setContentView(panel);
