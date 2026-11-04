@@ -146,8 +146,22 @@ jobs:
           cp patches/PlaylistImportHttpV81.java app/src/main/java/com/keldin/iptv/net/PlaylistImportHttpV81.java
           python3 patches/v81_network_and_chooser.py
 
-      - name: Audit player remote, guide, and navigation sources
-        run: python3 tests/v9_audit.py
+      - name: Upgrade player overlays, EPG, settings tabs and localization
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp patches/UiLocaleV9.java app/src/main/java/com/keldin/iptv/ui/UiLocaleV9.java
+          python3 patches/v9_i18n.py
+          python3 patches/v9_panel.py
+          python3 patches/v9_player.py
+          python3 patches/v9_epg.py
+          python3 patches/v9_settings.py
+          python3 patches/v9_player_localize.py
+          python3 patches/v9_network.py
+          python3 patches/v9_version.py
+
+      - name: Test v0.9 TV remote, EPG autodetection, languages and tab settings
+        run: bash tests/run_v9_tv_ux_tests.sh
 
       - name: Test retry after timeout and navigable TV category checkboxes
         run: bash tests/run_v81_import_tests.sh
