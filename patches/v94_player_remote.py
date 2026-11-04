@@ -55,11 +55,12 @@ methods='''    private boolean handleOverlayBackV94(KeyEvent event){
         int direction=(code==KeyEvent.KEYCODE_DPAD_UP||
             code==KeyEvent.KEYCODE_CHANNEL_UP)?-1:1;
         releaseQuickFocus();
+        PlaybackDiagnosticsV91.record(this,"REMOTE key: live channel "+(direction<0?"up":"down"));
         changeChannel(direction);
         return true;
     }
 
-'''
+
 replace_once(anchor,methods+anchor,"new unified remote helpers")
 replace_once('''            sidePanel.hide();
             showControls();
@@ -101,6 +102,40 @@ replace_once('''                    if(remote==KeyEvent.KEYCODE_BACK){
                         setControls(false);
                         return true;
                     }''',"legacy back fallback")
+
+# A 180k-entry catalog makes a full queue scan on every remote press
+# unnecessary. Cache only the active TV category (not the entire catalog).
+replace_once('''    private final ArrayList<Channel> queue=new ArrayList<>();''',
+'''    private final ArrayList<Channel> queue=new ArrayList<>();
+    private final ArrayList<Channel> cachedLiveGroupV94=new ArrayList<>();
+    private String cachedLiveGroupKeyV94="";''',"live channel cache fields")
+replace_once('''            ArrayList<Channel> group=new ArrayList<>();
+            for(Channel ch:queue)
+                if(ch.sourceId.equals(current.sourceId)&&ch.group.equals(current.group)
+                    && "LIVE".equals(ch.kind))group.add(ch);
+            if(group.isEmpty())return;''',
+'''            String cacheKey=current.sourceId+"|"+current.group;
+            if(!cacheKey.equals(cachedLiveGroupKeyV94)){
+                cachedLiveGroupV94.clear();
+                for(Channel ch:queue)
+                    if(ch.sourceId.equals(current.sourceId)&&ch.group.equals(current.group)
+                        && "LIVE".equals(ch.kind))cachedLiveGroupV94.add(ch);
+                cachedLiveGroupKeyV94=cacheKey;
+            }
+            ArrayList<Channel> group=cachedLiveGroupV94;
+            if(group.size()<2){
+                PlaybackDiagnosticsV91.record(this,"REMOTE ZAP: category has "+group.size()+" live channel(s)");
+                status.setText("No other channel in this category");
+                showControls();
+                return;
+            }
+            PlaybackDiagnosticsV91.record(this,"REMOTE ZAP: category size="+group.size()+
+                " direction="+delta);''',"cache group and log device-only channel zapping")
+replace_once('''    private void selectOverlayChannel(Channel ch){
+        if(ch==null)return;''',
+'''    private void selectOverlayChannel(Channel ch){
+        if(ch==null)return;
+        cachedLiveGroupKeyV94="";''',"invalidate group cache on manual channel selection")
 
 # Preserve every existing options action but replace the system list dialog
 # with a branded, scrollable, D-pad-focusable player controls sheet.
