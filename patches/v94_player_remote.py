@@ -61,6 +61,17 @@ methods='''    private boolean handleOverlayBackV94(KeyEvent event){
 
 '''
 replace_once(anchor,methods+anchor,"new unified remote helpers")
+replace_once('''            sidePanel.hide();
+            showControls();
+            return;
+        }
+        finish();''',
+'''            sidePanel.hide();
+            handler.removeCallbacks(hideControls);
+            setControls(false);
+            return;
+        }
+        finish();''',"side panel direct Back closes video overlay")
 replace_once('''        finish();
     }
 
