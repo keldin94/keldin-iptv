@@ -19,7 +19,7 @@ assert "overlay_hide_seconds" in panel and "resetAutoHide()" in panel
 assert "favorite.setFocusable(true)" in player and "favorite.requestFocus()" in player
 assert "setPreferredAudioLanguage" in player
 assert "selectedSettingsTab==6" in settings
-assert "android.widget.HorizontalScrollView navigation" in settings
+assert "settingsIconsV93=new TextView[7]" in settings and "selectSettingsTabV93" in settings
 assert "Playlist connection timeout" in settings
 assert 'ui_lang","en"' in i18n
 assert '"en","bs","sl","es"' in i18n
