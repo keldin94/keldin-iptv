@@ -17,7 +17,7 @@ assert "handler.removeCallbacks(hideControls);" in p
 assert "setControls(false);" in p[p.index("    private boolean handleOverlayBackV94"):p.index("    private boolean handleLiveChannelStepV94")]
 assert "if(event.getAction()==KeyEvent.ACTION_UP)return true;" in p
 assert "if(event.getRepeatCount()>0)return true;" in p
-assert "releaseQuickFocus();\\n        changeChannel(direction);" in p
+assert "releaseQuickFocus();\n        changeChannel(direction);" in p
 assert "sidePanel!=null&&sidePanel.isOpen())return false;" in p
 assert "quickActions[quickActionIndex].performClick();" in p
 assert "TvPlaybackOptionsV94.show(this,current.name,actions" in p
