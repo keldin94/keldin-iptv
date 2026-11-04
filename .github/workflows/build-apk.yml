@@ -1,4 +1,4 @@
-name: Build Keldin IPTV v0.6 Android TV APK
+name: Build Keldin IPTV v0.6.1 hotfix APK
 on:
   push:
     branches: [main]
@@ -106,6 +106,19 @@ jobs:
           python3 patches/v6_localize.py
           python3 patches/v6_polish.py
 
+      - name: Fix huge playlist import and remaining language labels
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp patches/CategoryScanV61.java app/src/main/java/com/keldin/iptv/net/CategoryScanV61.java
+          cp patches/PlaylistWizardV61.java app/src/main/java/com/keldin/iptv/net/PlaylistWizardV6.java
+          python3 patches/v61_parser.py
+          python3 patches/v61_release.py
+          python3 tests/audit_ui_language_v61.py
+
+      - name: Test 170K-item playlist with country filtering
+        run: bash tests/run_v61_tests.sh
+
       - name: Load licensed Inter typeface (fall back to Android sans-serif)
         shell: bash
         run: |
@@ -132,7 +145,7 @@ jobs:
           if-no-files-found: error
           retention-days: 30
 
-      - name: Publish v0.6.0 editorial Android TV APK
+      - name: Publish v0.6.1 large playlist hotfix APK
         if: success()
         env:
           GH_TOKEN: ${{ github.token }}
@@ -140,14 +153,14 @@ jobs:
         run: |
           set -euo pipefail
           test -s app/build/outputs/apk/debug/app-debug.apk
-          cp app/build/outputs/apk/debug/app-debug.apk keldin-v0.6.apk
-          if ! gh release view v0.6.0-test --repo "${GITHUB_REPOSITORY}" >/dev/null 2>&1; then
-            gh release create v0.6.0-test \
+          cp app/build/outputs/apk/debug/app-debug.apk keldin-v0.6.1.apk
+          if ! gh release view v0.6.1-test --repo "${GITHUB_REPOSITORY}" >/dev/null 2>&1; then
+            gh release create v0.6.1-test \
               --repo "${GITHUB_REPOSITORY}" \
               --target main \
-              --title "Keldin IPTV v0.6.0 — Editorial Cinema Android TV beta" \
-              --notes "Android TV beta v0.6: English default + 15 languages, TV/Films/Series/Radio, category filtering on import with progress feedback, last-channel launch, posters, EPG side panels, five palettes, settings descriptions and low-memory catalog. Hardware playback unverified." \
+              --title "Keldin IPTV v0.6.1 — Large Playlist Import Hotfix" \
+              --notes "Android TV beta v0.6.1 fixes 150000-entry import rejection: download once to temporary local file, scan country groups with bounded RAM, filter before retaining Channel data. Default import dialog English. Hardware playback still needs user verification." \
               --prerelease
           fi
-          gh release upload v0.6.0-test keldin-v0.6.apk \
+          gh release upload v0.6.1-test keldin-v0.6.1.apk \
             --repo "${GITHUB_REPOSITORY}" --clobber
