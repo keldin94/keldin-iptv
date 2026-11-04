@@ -179,6 +179,18 @@ jobs:
       - name: Inspect video buffering and remote key paths
         run: python3 tests/v91_player_inspect.py
 
+      - name: v0.9.2 compact remote controls and channel broadcaster logos
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 patches/v92_remote_controls.py
+          python3 patches/v91_channel_logos.py
+          python3 patches/v92_keyup_guard.py
+          python3 patches/v92_version.py
+
+      - name: Test v0.9.2 remote buttons, channel logos and stable package identity
+        run: bash tests/run_v92_regression.sh
+
       - name: Test v0.9 TV remote, EPG autodetection, languages and tab settings
         run: bash tests/run_v9_tv_ux_tests.sh
 
@@ -273,6 +285,20 @@ jobs:
           SIGNER="$(find "${ANDROID_HOME}/build-tools" -type f -name apksigner | sort -V | tail -n 1)"
           "${SIGNER}" verify --verbose keldin-iptv.apk
           sha256sum keldin-iptv.apk > keldin-iptv.apk.sha256
+          # Forbid accidental signing-key rotation: an Android update signed
+          # with a different certificate would not preserve user settings.
+          PREVIOUS="${RUNNER_TEMP}/previous-stable"
+          mkdir -p "${PREVIOUS}"
+          gh release download v0.9.1 -p 'keldin-iptv.apk' --dir "${PREVIOUS}" \
+            --repo "${GITHUB_REPOSITORY}"
+          PREV_CERT="$("${SIGNER}" verify --print-certs "${PREVIOUS}/keldin-iptv.apk" |
+            awk -F ': ' '/Signer #1 certificate SHA-256 digest/ {print $2;exit}')"
+          NEXT_CERT="$("${SIGNER}" verify --print-certs keldin-iptv.apk |
+            awk -F ': ' '/Signer #1 certificate SHA-256 digest/ {print $2;exit}')"
+          test -n "${PREV_CERT}"
+          test -n "${NEXT_CERT}"
+          test "${PREV_CERT}" = "${NEXT_CERT}"
+          echo "Signing certificate unchanged from v0.9.1; in-place settings retention protected."
 
           APK_DUMP="$(find "${ANDROID_HOME}/build-tools" -type f -name aapt | sort -V | tail -n 1)"
           PACKAGE_LINE="$("${APK_DUMP}" dump badging keldin-iptv.apk | grep "^package:")"
