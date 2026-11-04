@@ -60,7 +60,7 @@ methods='''    private boolean handleOverlayBackV94(KeyEvent event){
         return true;
     }
 
-
+'''
 replace_once(anchor,methods+anchor,"new unified remote helpers")
 replace_once('''            sidePanel.hide();
             showControls();
