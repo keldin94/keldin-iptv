@@ -146,6 +146,9 @@ jobs:
           cp patches/PlaylistImportHttpV81.java app/src/main/java/com/keldin/iptv/net/PlaylistImportHttpV81.java
           python3 patches/v81_network_and_chooser.py
 
+      - name: Audit player remote, guide, and navigation sources
+        run: python3 tests/v9_audit.py
+
       - name: Test retry after timeout and navigable TV category checkboxes
         run: bash tests/run_v81_import_tests.sh
 
