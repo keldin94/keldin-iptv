@@ -63,6 +63,12 @@ public final class AppUpdateManager {
     }
     public static void check(Activity activity,boolean manual){
         if(activity==null||activity.isFinishing()||activity.isDestroyed())return;
+        if(BuildConfig.APPLICATION_ID.endsWith(".updatepreview")){
+            if(manual)showMessage(activity,"Updater preview",
+                "This is a test build. In-place updates require the signed stable app. "+
+                "The stable app will preserve your playlists on future updates.");
+            return;
+        }
         if(!manual&&!automaticChecks(activity))return;
         long now=System.currentTimeMillis();
         if(!manual&&now-prefs(activity).getLong("last_check",0)<CHECK_INTERVAL)return;
