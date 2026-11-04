@@ -115,8 +115,7 @@ assert before in part,"v0.9.4 old option dialog marker missing"
 part=part.replace(before,after,1)
 closing='''            }).setNegativeButton("Zatvori",null).show();'''
 assert closing in part
-part=part.replace(closing,'''                if(!isFinishing()&&!isDestroyed())scheduleHide();
-            });''',1)
+part=part.replace(closing,'''            },this::scheduleHide);''',1)
 s=s[:begin]+part+s[finish:]
 # Leave playback state, D-pad zapping, and user configuration intact.
 p.write_text(s)
