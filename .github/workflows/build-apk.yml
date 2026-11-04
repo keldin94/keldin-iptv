@@ -201,6 +201,7 @@ jobs:
           python3 patches/v93_settings_icons.py
           python3 patches/v93_browse.py
           python3 patches/v93_settings_content.py
+          python3 patches/v93_localize.py
           python3 patches/v93_version.py
 
       - name: Test v0.9.3 adult filter, categories, home, focus and settings persistence
@@ -308,7 +309,7 @@ jobs:
           # with a different certificate would not preserve user settings.
           PREVIOUS="${RUNNER_TEMP}/previous-stable"
           mkdir -p "${PREVIOUS}"
-          gh release download v0.9.1 -p 'keldin-iptv.apk' --dir "${PREVIOUS}" \
+          gh release download v0.9.2 -p 'keldin-iptv.apk' --dir "${PREVIOUS}" \
             --repo "${GITHUB_REPOSITORY}"
           PREV_INFO="$("${SIGNER}" verify --print-certs "${PREVIOUS}/keldin-iptv.apk")"
           NEXT_INFO="$("${SIGNER}" verify --print-certs keldin-iptv.apk)"
@@ -324,10 +325,10 @@ jobs:
             exit 1
           fi
           if [ "${PREV_CERT}" != "${NEXT_CERT}" ]; then
-            echo "::error::Signing certificate differs from v0.9.1. Update stopped to protect app data."
+            echo "::error::Signing certificate differs from v0.9.2. Update stopped to protect app data."
             exit 1
           fi
-          echo "Signing certificate unchanged from v0.9.1; in-place settings retention protected."
+          echo "Signing certificate unchanged from v0.9.2; in-place settings retention protected."
 
           APK_DUMP="$(find "${ANDROID_HOME}/build-tools" -type f -name aapt | sort -V | tail -n 1)"
           PACKAGE_LINE="$("${APK_DUMP}" dump badging keldin-iptv.apk | grep "^package:")"
