@@ -176,6 +176,9 @@ jobs:
       - name: Audit live playback buffer lifecycle before v0.9.1 improvements
         run: python3 tests/v91_playback_audit.py
 
+      - name: Inspect video buffering and remote key paths
+        run: python3 tests/v91_player_inspect.py
+
       - name: Test v0.9 TV remote, EPG autodetection, languages and tab settings
         run: bash tests/run_v9_tv_ux_tests.sh
 
