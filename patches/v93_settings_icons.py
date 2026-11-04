@@ -75,6 +75,7 @@ old=s[start:end]
 assert "navigation.addView(tabRow);" in old
 new='''        // Icon-only tabs are always visible on Android TV. Selecting one
         // redraws only that section below the icon rail.
+        final LinearLayout[] settingsBodyRefV93={null};
         LinearLayout tabRow=Ui.horizontal(this);
         tabRow.setGravity(Gravity.CENTER_VERTICAL);
         tabRow.setClipChildren(false);
@@ -101,16 +102,18 @@ new='''        // Icon-only tabs are always visible on Android TV. Selecting one
             tab.setBackground(shape);
             tab.setOnClickListener(v->selectSettingsTabV93(position));
             tab.setOnKeyListener((v,key,event)->{
-                if(event.getAction()!=KeyEvent.ACTION_DOWN)return false;
-                if(key==KeyEvent.KEYCODE_DPAD_LEFT){
+                if(event.getAction()!=android.view.KeyEvent.ACTION_DOWN)return false;
+                if(key==android.view.KeyEvent.KEYCODE_DPAD_LEFT){
                     selectSettingsTabV93(Math.max(0,position-1));return true;
                 }
                 if(key==KeyEvent.KEYCODE_DPAD_RIGHT){
                     selectSettingsTabV93(Math.min(6,position+1));return true;
                 }
                 if(key==KeyEvent.KEYCODE_DPAD_DOWN){
-                    for(int k=0;k<body.getChildCount();k++){
-                        View child=body.getChildAt(k);
+                    LinearLayout target=settingsBodyRefV93[0];
+                    if(target==null)return true;
+                    for(int k=0;k<target.getChildCount();k++){
+                        View child=target.getChildAt(k);
                         if(child.isFocusable()&&child.getVisibility()==View.VISIBLE){
                             child.requestFocus();return true;
                         }
@@ -143,5 +146,12 @@ new='''        // Icon-only tabs are always visible on Android TV. Selecting one
         layout.addView(scope);
 '''
 s=s[:start]+new+s[end:]
+methodStart=s.index("    private void showSettingsV6(){")
+methodEnd=s.index("    private void headingV6(",methodStart)
+settings=s[methodStart:methodEnd]
+assert "        LinearLayout body=Ui.vertical(this);" in settings
+settings=settings.replace("        LinearLayout body=Ui.vertical(this);",
+    "        LinearLayout body=Ui.vertical(this);\n        settingsBodyRefV93[0]=body;",1)
+s=s[:methodStart]+settings+s[methodEnd:]
 p.write_text(s)
 print("v0.9.3: icon-only 7-section TV settings navigation, labels/scopes under selected icon, saved section, D-pad focus")
