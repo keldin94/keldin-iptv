@@ -59,7 +59,7 @@ repl('''            String[] choices={"Open seasons & episodes","Hide series","C
 repl('''        String[] actions={tr("play"),tr("favorites"),"Hide this title",tr("cancel")};''',
 '''        String[] actions={tr("play"),tr("favorites"),
             UiLocaleV9.translate(this,"Hide this title"),tr("cancel")};''',"film menu")
-repl('''        String message="Category: "+media.group+"\\\\n"+''',
-'''        String message=UiLocaleV9.translate(this,"Category")+": "+media.group+"\\\\n"+''',"media category")
+repl('''        String message="Category: "+media.group+''',
+'''        String message=UiLocaleV9.translate(this,"Category")+": "+media.group+''',"media category")
 p.write_text(s)
 print("v0.9.3: English-default and Bosnian/Slovenian/German localized media filtering controls")
