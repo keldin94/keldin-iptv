@@ -21,7 +21,7 @@ p=Path("app/src/main/java/com/keldin/iptv/playback/PlayerActivity.java")
 s=p.read_text()
 old='"Connected  •  Playing"'
 assert old in s
-s=s.replace(old,'com.keldin.iptv.ui.UiLocaleV9.translate(this,"Connected  •  Playing")',1)
+s=s.replace(old,'com.keldin.iptv.ui.UiLocaleV9.translate(PlayerActivity.this,"Connected  •  Playing")',1)
 p.write_text(s)
 p=Path("app/src/main/java/com/keldin/iptv/ui/UiLocaleV9.java")
 s=p.read_text()
