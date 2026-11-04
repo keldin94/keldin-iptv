@@ -25,14 +25,14 @@ nav='''        android.widget.HorizontalScrollView navigation=new android.widget
         navigation.setHorizontalScrollBarEnabled(false);
         LinearLayout tabRow=Ui.horizontal(this);
         tabRow.setPadding(Ui.dp(this,4),Ui.dp(this,3),Ui.dp(this,4),Ui.dp(this,5));
-        String[] labels={
+        String[] tabNames={
             I18n.t(this,"video"),I18n.t(this,"audio"),I18n.t(this,"network"),
             I18n.t(this,"lists"),I18n.t(this,"appearance"),
             I18n.t(this,"updates"),I18n.t(this,"system")
         };
-        for(int i=0;i<labels.length;i++){
+        for(int i=0;i<tabNames.length;i++){
             final int which=i;
-            TextView tab=Ui.text(this,labels[i],15,
+            TextView tab=Ui.text(this,tabNames[i],15,
                 selectedSettingsTab==i?Ui.WHITE:Ui.MUTED,true);
             tab.setFocusable(true);tab.setClickable(true);
             tab.setGravity(android.view.Gravity.CENTER);
