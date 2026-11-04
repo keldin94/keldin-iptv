@@ -161,6 +161,18 @@ jobs:
           python3 patches/v9_localization_privacy.py
           python3 patches/v9_version.py
 
+      - name: Compact TV playback information and improve buffer diagnostics
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp patches/PlaybackDiagnosticsV91.java app/src/main/java/com/keldin/iptv/playback/PlaybackDiagnosticsV91.java
+          python3 patches/v91_compact_overlay.py
+          python3 patches/v91_playback.py
+          python3 patches/v91_version.py
+
+      - name: Test v0.9.1 overlay, watchdog and preserved update identity
+        run: bash tests/run_v91_regression.sh
+
       - name: Audit live playback buffer lifecycle before v0.9.1 improvements
         run: python3 tests/v91_playback_audit.py
 
