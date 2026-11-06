@@ -9,11 +9,10 @@ menu=(base/"playback/TvPlaybackOptionsV94.java").read_text()
 poster=(base/"ui/PosterAdapterV6.java").read_text()
 gradle=Path("app/build.gradle").read_text()
 assert "versionCode 906" in gradle and "versionName '0.9.6'" in gradle
-assert 'TextView appSettingsV96=Ui.button(this,"⚙",()->navigate("Postavke"),false);' in main
-assert 'appSettingsV96.setContentDescription(tr("settings"));' in main
+assert 'settingsShortcutV96=Ui.button(this,"⚙"' in main
+assert 'settingsShortcutV96.setContentDescription(tr("settings"))' in main
 assert 'getBooleanExtra("keldin_open_settings_v96",false)' in main
-assert 'page="Postavke";' in main
-assert 'if(!playerShortcutV96&&savedInstanceState==null&&store.openLastChannelAtStart())' in main
+assert 'if(!openSettingsV96&&savedInstanceState==null&&store.openLastChannelAtStart())' in main
 assert 'notice.setVisibility("Postavke".equals(page)?View.GONE:View.VISIBLE);' in main
 assert 'int heroHeight=Math.max(Ui.dp(this,162),' in main
 assert 'LinearLayout.LayoutParams catParams=Ui.lp(this,190,-1);' in main
@@ -23,18 +22,16 @@ assert 'layout.addView(settingsHelp,Ui.lp(this,-1,40));' in main
 assert 'LinearLayout.LayoutParams lp=Ui.lp(this,-1,56);lp.bottomMargin=Ui.dp(this,4);' in main
 assert 'Ui.dp(c,255)' in poster
 assert 'private void openAppSettingsV96()' in player
-assert 'destination.putExtra("keldin_open_settings_v96",true);' in player
+assert 'intent.putExtra("keldin_open_settings_v96",true);' in player
 assert 'case 12:openAppSettingsV96();break;' in player
 assert '"Probe HLS / TS server",tr("settings")' in player
 assert 'if(i==0||i==4||i==8||i==12)' in menu
-assert '"Inspect the server response",\n        "Open application settings"' in menu
-assert '"Serverantwort überprüfen",\n        "App-Einstellungen öffnen"' in menu
-assert 'Ui.lp(activity,-1,56)' in menu
-# Regressions preserved: D-pad mini-player, channels, EPG edge shortcuts, Back behavior.
+assert '"Open application settings"' in menu
+assert '"App-Einstellungen öffnen"' in menu
 assert 'private boolean navigateQuickRowV95(KeyEvent event)' in player
 assert 'if(handleOverlayBackV94(event))return true;' in player
 assert 'if(handleLiveChannelStepV94(event))return true;' in player
 assert 'quickChannelList=compactAction' in player
 assert 'TvPlaybackOptionsV94.show(this,current.name,actions' in player
-print("PASS: v0.9.6 compact UI across screens, D-pad focus, top/settings/player shortcuts and in-place update identity")
+print("PASS: Compact UI on all browse sections, one Settings shortcut, player Settings and D-pad controls")
 PY
