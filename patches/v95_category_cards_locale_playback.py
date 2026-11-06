@@ -57,6 +57,9 @@ edit(base+"data/CatalogStore.java",[
 ])
 
 edit(base+"ui/ChannelAdapter.java",[
+ ("compact channel cards",
+  'Ui.dp(c,guideMode?106:164)',
+  'Ui.dp(c,guideMode?126:136)'),
  ("smaller channel card padding",
   'box.setPadding(Ui.dp(c,15),Ui.dp(c,15),Ui.dp(c,15),Ui.dp(c,12));',
   'box.setPadding(Ui.dp(c,11),Ui.dp(c,11),Ui.dp(c,11),Ui.dp(c,9));'),
