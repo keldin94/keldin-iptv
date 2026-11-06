@@ -243,6 +243,12 @@ jobs:
       - name: Test v0.9.6 global UI density and direct settings navigation
         run: bash tests/run_v96_compact_regression.sh
 
+      - name: Apply unified dark interface and compact settings/TV cards
+        run: python3 patches/v96_design_system.py
+
+      - name: Test tvOS-inspired layout density and D-pad focus
+        run: bash tests/run_v96_design_system.sh
+
 
 
 
