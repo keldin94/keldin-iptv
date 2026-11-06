@@ -8,3 +8,5 @@
 - Same stable package `com.keldin.iptv` and permanent signing certificate; in-place update preserves playlists, favorites and settings. Never uninstall the old version to update.
 
 Automated regression tests and Android release build passed before publishing. Real Xiaomi TV Box playback stutter and full language coverage still require device verification.
+
+Install using **Settings → Updates → Check for updates** in Keldin IPTV and confirm the Android installer. Do not uninstall the existing app. The production workflow checks both the APK package identity and the signing certificate against v0.9.5 before publishing. Stream playback and D-pad interactions still need confirmation on the actual TV Box.
