@@ -39,8 +39,8 @@ replace("ui/MainActivity.java",
 '''                    if(!openSettingsV96 && store.channels().isEmpty()&&!store.sources().isEmpty()){''',
 "do not auto-open playlists when entering Settings")
 replace("ui/MainActivity.java",
-'''                    }else if(savedInstanceState==null&&store.openLastChannelAtStart()){''',
-'''                    }else if(!openSettingsV96&&savedInstanceState==null&&store.openLastChannelAtStart()){''',
+'''mainHandler.post(()->play(last));''',
+'''if(!openSettingsV96)mainHandler.post(()->play(last));''',
 "prevent auto-play when opening Settings")
 replace("ui/MainActivity.java",
 '''    private void createShell() {''',
