@@ -11,7 +11,8 @@ def rep(before,after,label):
 rep('''    private boolean remoteBackConsumedV94=false;''',
 '''    private boolean remoteBackConsumedV94=false;
     private TextView quickChannelList;
-    private boolean remoteHorizontalConsumedV95=false;''',
+    private boolean remoteHorizontalConsumedV95=false;
+    private boolean remoteCentreConsumedV95=false;''',
 "fields")
 
 rep('''    private void createUi(){''',
@@ -79,7 +80,14 @@ rep('''        row.addView(right,Ui.lp(this,252,-2));''',
 
 rep('''        if(handleLiveChannelStepV94(event))return true;''',
 '''        if(handleLiveChannelStepV94(event))return true;
-        if(navigateQuickRowV95(event))return true;''',"intercept horizontal before Android focus/onKeyDown")
+        if(navigateQuickRowV95(event))return true;
+        if(remoteCentreConsumedV95 &&
+            event.getAction()==KeyEvent.ACTION_UP &&
+            (event.getKeyCode()==KeyEvent.KEYCODE_DPAD_CENTER||
+             event.getKeyCode()==KeyEvent.KEYCODE_ENTER)){
+            remoteCentreConsumedV95=false;
+            return true;
+        }''',"intercept horizontal before Android focus/onKeyDown")
 
 rep('''                moveQuickFocus(1);
                 return true;
@@ -92,6 +100,14 @@ rep('''                moveQuickFocus(1);
         }
         if(event.getAction()==KeyEvent.ACTION_UP && quickActionIndex>=0''',
 "initial OK focus")
+
+rep('''                        quickActions[quickActionIndex].performClick();
+                        scheduleHide();
+                        return true;''',
+'''                        remoteCentreConsumedV95=true;
+                        quickActions[quickActionIndex].performClick();
+                        scheduleHide();
+                        return true;''',"avoid duplicate Android click after panels open")
 
 p.write_text(s)
 print("PASS: v0.9.5 six-button mini-player, horizontal D-pad navigation and edge shortcuts")
