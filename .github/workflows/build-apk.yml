@@ -262,6 +262,9 @@ jobs:
       - name: Audit language defaults and expand TV Grid localization
         run: python3 patches/v97_i18n_audit_fixes.py
 
+      - name: Expand Settings and player labels across all selectable languages
+        run: python3 patches/v97_extended_languages.py
+
       - name: Upgrade release version to v0.9.7
         run: python3 patches/v97_version.py
 
