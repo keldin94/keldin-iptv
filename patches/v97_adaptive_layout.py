@@ -172,7 +172,7 @@ s=s.replace('''        TextView eyebrow=Ui.text(ctx,"KELDIN IPTV  /  FULL",10,Ui
 p.write_text(s)
 # Player options are also translated and must expand when a label wraps.
 edit("playback/TvPlaybackOptionsV94.java",
-'''            LinearLayout.LayoutParams cell=Ui.lp(activity,-1,56);''',
+'''            LinearLayout.LayoutParams cell=Ui.lp(activity,-1,64);''',
 '''            item.setMinimumHeight(Ui.dp(activity,65));
             LinearLayout.LayoutParams cell=Ui.lp(activity,-1,-2);''',
 "options dialog auto height")
