@@ -225,6 +225,13 @@ jobs:
       - name: Test v0.9.5 live film categories, localization and TV cards
         run: bash tests/run_v95_regression.sh
 
+      - name: Apply focused mini-player D-pad, channel list button and edge actions
+        run: python3 patches/v95_mini_panel_navigation.py
+
+      - name: Test compact mini-player remote boundaries and buttons
+        run: bash tests/run_v95_mini_panel_regression.sh
+
+
 
 
       - name: Audit actual player remote and options UI before v0.9.4
