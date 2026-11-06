@@ -39,10 +39,6 @@ replace("ui/MainActivity.java",
 '''                    if(!openSettingsV96 && store.channels().isEmpty()&&!store.sources().isEmpty()){''',
 "do not auto-open playlists when entering Settings")
 replace("ui/MainActivity.java",
-'''if(store.channels().isEmpty()&&!store.sources().isEmpty()){''',
-'''if(!openSettingsV96 && store.channels().isEmpty()&&!store.sources().isEmpty()){''',
-"skip missing-catalog redirect for Settings")
-replace("ui/MainActivity.java",
 '''                    }else if(savedInstanceState==null&&store.openLastChannelAtStart()){''',
 '''                    }else if(!openSettingsV96&&savedInstanceState==null&&store.openLastChannelAtStart()){''',
 "prevent auto-play when opening Settings")
