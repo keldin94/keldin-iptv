@@ -23,15 +23,6 @@ change('LinearLayout.LayoutParams hp=Ui.lp(this,-2,42);hp.leftMargin=Ui.dp(this,
        'LinearLayout.LayoutParams hp=Ui.lp(this,-2,36);hp.leftMargin=Ui.dp(this,6);',"home toolbar")
 change('LinearLayout.LayoutParams sp=Ui.lp(this,-2,42);sp.leftMargin=Ui.dp(this,9);',
        'LinearLayout.LayoutParams sp=Ui.lp(this,-2,36);sp.leftMargin=Ui.dp(this,6);',"search toolbar")
-change('''        toolbar.addView(search,sp);
-        // Playlist administration lives in Settings -> Playlists.''',
-'''        toolbar.addView(search,sp);
-        TextView appSettingsV96=Ui.button(this,"⚙",()->navigate("Postavke"),false);
-        appSettingsV96.setContentDescription(tr("settings"));
-        LinearLayout.LayoutParams settingsShortcutLpV96=Ui.lp(this,42,36);
-        settingsShortcutLpV96.leftMargin=Ui.dp(this,6);
-        toolbar.addView(appSettingsV96,settingsShortcutLpV96);
-        // Playlist administration lives in Settings -> Playlists.''',"settings shortcut beside search")
 change('cp.topMargin=Ui.dp(this,7);','cp.topMargin=Ui.dp(this,3);',"content start gap")
 change('''        page=destination;searchQuery="";
         if("Postavke".equals(page)){''',
@@ -40,27 +31,6 @@ change('''        page=destination;searchQuery="";
             notice.setVisibility("Postavke".equals(page)?View.GONE:View.VISIBLE);
         if("Postavke".equals(page)){''',"hide unnecessary status banner in Settings")
 # Opening Settings from player should not trigger startup-channel playback.
-change('''                    sync=new PlaylistSync(this,store);
-                    createShell();
-                    render();
-                    if(store.channels().isEmpty()&&!store.sources().isEmpty()){''',
-'''                    sync=new PlaylistSync(this,store);
-                    boolean playerShortcutV96=getIntent()!=null &&
-                        getIntent().getBooleanExtra("keldin_open_settings_v96",false);
-                    if(playerShortcutV96){
-                        page="Postavke";
-                        settingsOpenFocusV93=true;
-                        selectedSettingsTab=getSharedPreferences("keldin_settings",MODE_PRIVATE)
-                            .getInt("settings_section_v93",0);
-                    }
-                    createShell();
-                    if(playerShortcutV96&&notice!=null)notice.setVisibility(View.GONE);
-                    render();
-                    if(!playerShortcutV96&&store.channels().isEmpty()&&!store.sources().isEmpty()){''',"player-to-settings entry point")
-change('''                    }else if(savedInstanceState==null&&store.openLastChannelAtStart()){''',
-'''                    }else if(!playerShortcutV96&&savedInstanceState==null&&store.openLastChannelAtStart()){''',"prevent unwanted startup playback")
-
-# Shorter and cleaner dashboard; preserve all existing destinations and focus styles.
 change('tile.setPadding(Ui.dp(this,20),Ui.dp(this,19),Ui.dp(this,14),Ui.dp(this,17));',
        'tile.setPadding(Ui.dp(this,15),Ui.dp(this,12),Ui.dp(this,12),Ui.dp(this,11));',"dashboard tile padding")
 change('TextView mark=Ui.text(this,glyph,43,Ui.ACCENT,true);',
@@ -177,60 +147,5 @@ for a,b in [
     t=t.replace(a,b,1)
 poster.write_text(t)
 
-# Modern and smaller playback dialog with direct Settings action.
-sheet=BASE/"playback/TvPlaybackOptionsV94.java"
-t=sheet.read_text()
-changes=[
- ('"Ⅱ","❮","❯","⌕"','"Ⅱ","❮","❯","⌕","⚙"'),
- ('"Inspect the server response"','"Inspect the server response",\n        "Open application settings"'),
- ('"Provjeri odgovor servera"','"Provjeri odgovor servera",\n        "Otvori postavke aplikacije"'),
- ('"Preveri odziv strežnika"','"Preveri odziv strežnika",\n        "Odpri nastavitve aplikacije"'),
- ('"Serverantwort überprüfen"','"Serverantwort überprüfen",\n        "App-Einstellungen öffnen"'),
- ('"STREAM","PLAYBACK","CHANNEL"','"STREAM","PLAYBACK","CHANNEL","APPLICATION"'),
- ('"STREAM","REPRODUKCIJA","KANALI"','"STREAM","REPRODUKCIJA","KANALI","APLIKACIJA"'),
- ('"PRENOS","PREDVAJANJE","KANALI"','"PRENOS","PREDVAJANJE","KANALI","APLIKACIJA"'),
- ('"STREAM","WIEDERGABE","SENDER"','"STREAM","WIEDERGABE","SENDER","APP"'),
- ('if(i==0||i==4||i==8){','if(i==0||i==4||i==8||i==12){'),
- ('panel.setPadding(Ui.dp(activity,27),Ui.dp(activity,20),\n            Ui.dp(activity,27),Ui.dp(activity,21));',
-  'panel.setPadding(Ui.dp(activity,21),Ui.dp(activity,15),\n            Ui.dp(activity,21),Ui.dp(activity,15));'),
- ('Ui.text(activity,"Playback options",24,Ui.WHITE,true)','Ui.text(activity,"Playback options",21,Ui.WHITE,true)'),
- ('item.setPadding(Ui.dp(activity,15),Ui.dp(activity,9),\n                Ui.dp(activity,14),Ui.dp(activity,9));',
-  'item.setPadding(Ui.dp(activity,12),Ui.dp(activity,5),\n                Ui.dp(activity,12),Ui.dp(activity,5));'),
- ('item.addView(symbol,Ui.lp(activity,51,48));','item.addView(symbol,Ui.lp(activity,45,42));'),
- ('LinearLayout.LayoutParams cell=Ui.lp(activity,-1,64);','LinearLayout.LayoutParams cell=Ui.lp(activity,-1,56);'),
- ('cell.bottomMargin=Ui.dp(activity,5);','cell.bottomMargin=Ui.dp(activity,3);'),
-]
-for a,b in changes:
-    if a not in t:raise AssertionError("Playback menu missing "+a)
-    t=t.replace(a,b,1)
-sheet.write_text(t)
 
-player=BASE/"playback/PlayerActivity.java"
-t=player.read_text()
-anchor='''    private void showOptions() {'''
-if anchor not in t:raise AssertionError("no player option method")
-t=t.replace(anchor,'''    private void openAppSettingsV96(){
-        // Android Activity lifecycle releases the player while Settings is visible;
-        // returning with Back restarts the current channel through onStart().
-        android.content.Intent destination=new android.content.Intent(
-            this,com.keldin.iptv.ui.MainActivity.class);
-        destination.putExtra("keldin_open_settings_v96",true);
-        startActivity(destination);
-    }
-
-'''+anchor,1)
-a='''            "Probe HLS / TS server"};'''
-if a not in t:raise AssertionError("player actions closing missing")
-t=t.replace(a,'''            "Probe HLS / TS server",tr("settings")};''',1)
-a='''                    case 11:diagnoseServer();break;'''
-if a not in t:raise AssertionError("player switch option missing")
-t=t.replace(a,a+'''
-                    case 12:openAppSettingsV96();break;''',1)
-player.write_text(t)
-
-gradle=Path("app/build.gradle")
-g=gradle.read_text()
-assert "versionCode 905" in g and "versionName '0.9.5'" in g
-gradle.write_text(g.replace("versionCode 905","versionCode 906",1)
-                   .replace("versionName '0.9.5'","versionName '0.9.6'",1))
-print("PASS: v0.9.6 global compact UI, main-toolbar Settings, focused player Settings and back-stack navigation")
+print('PASS: Compact Android TV layout on home, catalog, settings and poster cards')
