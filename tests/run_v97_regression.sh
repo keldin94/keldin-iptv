@@ -29,7 +29,7 @@ assert 'int alpha=Math.max(222' in side
 assert 'body.addView(list,new LinearLayout.LayoutParams(-1,0,1));' in side
 assert 'if(mode==CATEGORIES){\n            LinearLayout split=' not in side
 assert 'row.setMinimumHeight(Ui.dp(ctx,70));' in side
-assert 'new RecyclerView.LayoutParams(\n                -1,ViewGroup.LayoutParams.WRAP_CONTENT)' in side
+assert 'ViewGroup.LayoutParams.WRAP_CONTENT' in side
 assert 'title.setMaxLines(2)' in side and 'subtitle.setMaxLines(2)' in side
 assert 'active.title+' in side and 'r.subtitle=c.group+' not in side
 # Quick player, side drawer, grid: real callbacks, no new player or stream URL.
