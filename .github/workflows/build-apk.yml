@@ -231,17 +231,17 @@ jobs:
       - name: Test compact mini-player remote boundaries and buttons
         run: bash tests/run_v95_mini_panel_regression.sh
 
-      - name: Add direct Settings navigation and cross-screen localization
-        run: python3 patches/v96_settings_navigation_locale.py
-
-      - name: Test v0.9.6 Settings shortcuts and translations
-        run: bash tests/run_v96_settings_locale.sh
-
       - name: Apply v0.9.6 compact UI across home, settings, catalog and player
         run: python3 patches/v96_compact_navigation.py
 
       - name: Test v0.9.6 global UI density and direct settings navigation
         run: bash tests/run_v96_compact_regression.sh
+
+      - name: Apply v0.9.6 English-first UI localization cleanup
+        run: python3 patches/v96_localization_cleanup.py
+
+      - name: Test v0.9.6 localized authored labels
+        run: bash tests/run_v96_locale_cleanup.sh
 
 
 
