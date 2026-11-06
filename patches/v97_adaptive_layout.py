@@ -162,7 +162,8 @@ s=s.replace('''            subtitle.setSingleLine(true);
             subtitle.setEllipsize(android.text.TextUtils.TruncateAt.END);''',
 '''            subtitle.setMaxLines(2);
             subtitle.setEllipsize(android.text.TextUtils.TruncateAt.END);''',1)
-s=s.replace('''            RecyclerView.LayoutParams lp=new RecyclerView.LayoutParams(-1,Ui.dp(ctx,69));''',
+assert 'RecyclerView.LayoutParams lp=new RecyclerView.LayoutParams(-1,Ui.dp(ctx,58));' in s, "legacy fixed 58dp row missing"
+s=s.replace('''            RecyclerView.LayoutParams lp=new RecyclerView.LayoutParams(-1,Ui.dp(ctx,58));''',
 '''            RecyclerView.LayoutParams lp=new RecyclerView.LayoutParams(
                 -1,ViewGroup.LayoutParams.WRAP_CONTENT);''',1)
 s=s.replace('''            lp.bottomMargin=Ui.dp(ctx,5);''',
