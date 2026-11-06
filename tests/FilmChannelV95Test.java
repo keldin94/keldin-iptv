@@ -34,7 +34,7 @@ public final class FilmChannelV95Test {
                 "#EXTINF:-1 group-title=\"Filmovi\",Film\n"+
                 "http://server.example/movie/u/p/3.mp4\n";
             Files.writeString(file,m3u,StandardCharsets.UTF_8);
-            CategoryScanV61 scan=CategoryScanV61.scan(file,n->{});
+            CategoryScanV61 scan=CategoryScanV61.scan(file.toFile(),n->{});
             require(scan.liveGroups.getOrDefault(group,0)==2,"two filmski TV channels scanned");
             require(scan.kinds[0]==2 && scan.kinds[1]==1,"two live, one movie");
         }finally{Files.deleteIfExists(file);}
