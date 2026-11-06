@@ -24,18 +24,20 @@ replace("ui/MainActivity.java",
 
 # Add a single target page argument; never clear/recreate playlists, settings or user data.
 replace("ui/MainActivity.java",
-'''                    createShell();''',
-'''                    boolean openSettingsV96=getIntent()!=null &&
+'''                    createShell();
+                    render();''',
+'''                    createShell();
+                    boolean openSettingsV96=getIntent()!=null &&
                         getIntent().getBooleanExtra("keldin_open_settings_v96",false);
                     if(openSettingsV96){
                         getIntent().removeExtra("keldin_open_settings_v96");
-                        page="Postavke";
-                        settingsOpenFocusV93=true;
-                        selectedSettingsTab=getSharedPreferences("keldin_settings",MODE_PRIVATE)
-                            .getInt("settings_section_v93",0);
-                    }
-                    createShell();''',
+                        navigate("Postavke");
+                    }else render();''',
 "handle launch from player")
+replace("ui/MainActivity.java",
+'''                    if(store.channels().isEmpty()&&!store.sources().isEmpty()){''',
+'''                    if(!openSettingsV96 && store.channels().isEmpty()&&!store.sources().isEmpty()){''',
+"do not auto-open playlists when entering Settings")
 replace("ui/MainActivity.java",
 '''if(store.channels().isEmpty()&&!store.sources().isEmpty()){''',
 '''if(!openSettingsV96 && store.channels().isEmpty()&&!store.sources().isEmpty()){''',
