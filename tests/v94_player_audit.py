@@ -25,3 +25,24 @@ for target in [
         print("\n=== V95 SOURCE AUDIT: "+source.name+" ===")
         for line_number,code in enumerate(source.read_text().splitlines(),1):
             print(f"{line_number:04d}: {code}")
+
+# Full v0.9.7 live-panel layout audit, no customer playlists or credentials.
+def show_region(file, begin, end, cap=280):
+    lines=Path(file).read_text().splitlines()
+    start=next((i for i,x in enumerate(lines) if begin in x),-1)
+    stop=next((i for i,x in enumerate(lines) if end in x and i>start),-1)
+    if start<0:
+        print("REGION NOT FOUND",file,begin)
+        return
+    if stop<0: stop=min(len(lines),start+cap)
+    print("\\n=== V97 LAYOUT",file,begin,"from",start+1,"===")
+    for j in range(start,min(stop,start+cap)):
+        print(f"{j+1:04d}: {lines[j]}")
+show_region("app/src/main/java/com/keldin/iptv/playback/PlayerActivity.java",
+            "    private void createUi(){","    private void updateInfo(",250)
+show_region("app/src/main/java/com/keldin/iptv/playback/TvSidePanel.java",
+            "    private void rebuild(){","    private static final class RowData",230)
+show_region("app/src/main/java/com/keldin/iptv/playback/TvSidePanel.java",
+            "    public void left(){","    private GradientDrawable rounded(",130)
+show_region("app/src/main/java/com/keldin/iptv/ui/Ui.java",
+            "    public static TextView text(","    public static ",60)
