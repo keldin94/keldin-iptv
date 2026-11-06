@@ -24,18 +24,22 @@ replace("ui/MainActivity.java",
 
 # Add a single target page argument; never clear/recreate playlists, settings or user data.
 replace("ui/MainActivity.java",
-'''                    createShell();
-                    render();
-                    if(store.channels().isEmpty()&&!store.sources().isEmpty()){''',
-'''                    createShell();
-                    boolean openSettingsV96=getIntent()!=null &&
+'''                    createShell();''',
+'''                    boolean openSettingsV96=getIntent()!=null &&
                         getIntent().getBooleanExtra("keldin_open_settings_v96",false);
                     if(openSettingsV96){
                         getIntent().removeExtra("keldin_open_settings_v96");
-                        navigate("Postavke");
-                    }else render();
-                    if(!openSettingsV96 && store.channels().isEmpty()&&!store.sources().isEmpty()){''',
+                        page="Postavke";
+                        settingsOpenFocusV93=true;
+                        selectedSettingsTab=getSharedPreferences("keldin_settings",MODE_PRIVATE)
+                            .getInt("settings_section_v93",0);
+                    }
+                    createShell();''',
 "handle launch from player")
+replace("ui/MainActivity.java",
+'''if(store.channels().isEmpty()&&!store.sources().isEmpty()){''',
+'''if(!openSettingsV96 && store.channels().isEmpty()&&!store.sources().isEmpty()){''',
+"skip missing-catalog redirect for Settings")
 replace("ui/MainActivity.java",
 '''                    }else if(savedInstanceState==null&&store.openLastChannelAtStart()){''',
 '''                    }else if(!openSettingsV96&&savedInstanceState==null&&store.openLastChannelAtStart()){''',
