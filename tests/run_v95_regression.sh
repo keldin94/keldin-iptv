@@ -17,7 +17,7 @@ l=(base/"ui/UiLocaleV9.java").read_text()
 d=(base/"playback/PlaybackDiagnosticsV91.java").read_text()
 m=(base/"ui/MainActivity.java").read_text()
 v=Path("app/build.gradle").read_text()
-assert "versionCode 905" in v and "versionName '0.9.5'" in v
+assert "versionCode 906" in v and "versionName '0.9.6'" in v
 assert "isLiveFilmGroup(c.group,c.url)" in c
 assert 'name.setMaxLines(2)' in a
 assert 'headText.addView(name); // The selected category' in a
