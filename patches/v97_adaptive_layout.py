@@ -170,4 +170,35 @@ s=s.replace('''            lp.bottomMargin=Ui.dp(ctx,5);''',
 s=s.replace('''        TextView eyebrow=Ui.text(ctx,"KELDIN IPTV  /  FULL",10,Ui.ACCENT,true);''',
 '''        TextView eyebrow=Ui.text(ctx,"KELDIN IPTV",10,Ui.ACCENT,true);''',1)
 p.write_text(s)
+# Player options are also translated and must expand when a label wraps.
+edit("playback/TvPlaybackOptionsV94.java",
+'''            LinearLayout.LayoutParams cell=Ui.lp(activity,-1,56);''',
+'''            item.setMinimumHeight(Ui.dp(activity,65));
+            LinearLayout.LayoutParams cell=Ui.lp(activity,-1,-2);''',
+"options dialog auto height")
+edit("playback/TvPlaybackOptionsV94.java",
+'''            TextView name=Ui.text(activity,actions[i],17,Ui.WHITE,true);
+            TextView detail=Ui.text(activity,details[i],12,Ui.MUTED,false);''',
+'''            TextView name=Ui.text(activity,actions[i],16,Ui.WHITE,true);
+            name.setMaxLines(2);
+            TextView detail=Ui.text(activity,details[i],12,Ui.MUTED,false);
+            detail.setMaxLines(3);''',
+"options translated descriptions measured")
+
+# Long film/series titles need two lines without losing poster height.
+edit("ui/PosterAdapterV6.java",
+'''        RecyclerView.LayoutParams lp=new RecyclerView.LayoutParams(-1,Ui.dp(c,255));''',
+'''        root.setMinimumHeight(Ui.dp(c,255));
+        RecyclerView.LayoutParams lp=new RecyclerView.LayoutParams(
+            -1,ViewGroup.LayoutParams.WRAP_CONTENT);''',
+"poster cards adapt to titles")
+edit("ui/PosterAdapterV6.java",
+'''        root.addView(poster,new LinearLayout.LayoutParams(-1,0,1));''',
+'''        root.addView(poster,new LinearLayout.LayoutParams(-1,Ui.dp(c,186)));''',
+"poster image retains explicit height")
+edit("ui/PosterAdapterV6.java",
+'''        title.setSingleLine(true);title.setEllipsize(TextUtils.TruncateAt.END);''',
+'''        title.setMaxLines(2);title.setEllipsize(TextUtils.TruncateAt.END);''',
+"fuller film/series titles")
+
 print("PASS: flexible row heights, readable channel/category/EPG panels, no disconnected category logo rail")
