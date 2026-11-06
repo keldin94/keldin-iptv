@@ -12,7 +12,7 @@ assert "versionCode 906" in gradle and "versionName '0.9.6'" in gradle
 assert 'settingsShortcutV96=Ui.button(this,"⚙"' in main
 assert 'settingsShortcutV96.setContentDescription(tr("settings"))' in main
 assert 'getBooleanExtra("keldin_open_settings_v96",false)' in main
-assert 'if(!openSettingsV96&&savedInstanceState==null&&store.openLastChannelAtStart())' in main
+assert 'if(!openSettingsV96)mainHandler.post(()->play(last));' in main
 assert 'notice.setVisibility("Postavke".equals(page)?View.GONE:View.VISIBLE);' in main
 assert 'int heroHeight=Math.max(Ui.dp(this,162),' in main
 assert 'LinearLayout.LayoutParams catParams=Ui.lp(this,190,-1);' in main
