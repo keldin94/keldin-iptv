@@ -358,7 +358,7 @@ jobs:
           # with a different certificate would not preserve user settings.
           PREVIOUS="${RUNNER_TEMP}/previous-stable"
           mkdir -p "${PREVIOUS}"
-          gh release download v0.9.3 -p 'keldin-iptv.apk' --dir "${PREVIOUS}" \
+          gh release download v0.9.5 -p 'keldin-iptv.apk' --dir "${PREVIOUS}" \
             --repo "${GITHUB_REPOSITORY}"
           PREV_INFO="$("${SIGNER}" verify --print-certs "${PREVIOUS}/keldin-iptv.apk")"
           NEXT_INFO="$("${SIGNER}" verify --print-certs keldin-iptv.apk)"
@@ -374,10 +374,10 @@ jobs:
             exit 1
           fi
           if [ "${PREV_CERT}" != "${NEXT_CERT}" ]; then
-            echo "::error::Signing certificate differs from v0.9.3. Update stopped to protect app data."
+            echo "::error::Signing certificate differs from v0.9.5. Update stopped to protect app data."
             exit 1
           fi
-          echo "Signing certificate unchanged from v0.9.3; in-place settings retention protected."
+          echo "Signing certificate unchanged from v0.9.5; in-place settings retention protected."
 
           APK_DUMP="$(find "${ANDROID_HOME}/build-tools" -type f -name aapt | sort -V | tail -n 1)"
           PACKAGE_LINE="$("${APK_DUMP}" dump badging keldin-iptv.apk | grep "^package:")"
@@ -393,6 +393,6 @@ jobs:
             --repo "${GITHUB_REPOSITORY}" \
             --target "${GITHUB_SHA}" \
             --title "Keldin IPTV ${APP_VERSION} — Android TV" \
-            --notes "v0.9.5: EX-YU Filmski broadcaster categories now appear under Live TV, including existing imported channels. Channel cards display smaller two-line names and available EPG programme titles without repeated category or LIVE badges. Localized missing-guide text and playback states. Improved live rebuffer tolerance and private diagnostics to distinguish buffering from dropped video frames; server/device stutter still requires device confirmation. Permanent signing key and installed playlists/favorites preserved. Signed in-place update." \
+            --notes "v0.9.6: Redesigned compact dark Android TV interface across Home, Live TV, Movies, Series, Search and Settings. Reduced excess whitespace, updated typography and selection states, improved compact player navigation, and added Settings shortcuts next to Search and in playback options. Fixed EX-YU Filmski live-channel grouping and EPG card localization from v0.9.5. Improved language coverage and private buffering/dropped-frame diagnostics. Existing playlists, favorites and installed app data remain preserved through the same package ID and signing key." \
             keldin-iptv.apk keldin-iptv.apk.sha256
           rm -f "${KELDIN_SIGNING_FILE}"
