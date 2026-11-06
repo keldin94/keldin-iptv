@@ -15,7 +15,7 @@ assert 'settingsShortcutV96.setContentDescription(tr("settings"))' in main
 assert 'toolbar.addView(settingsShortcutV96,settingsShortcutLp)' in main
 assert 'getBooleanExtra("keldin_open_settings_v96",false)' in main
 assert 'if(!openSettingsV96 && store.channels().isEmpty()' in main
-assert 'else if(!openSettingsV96&&savedInstanceState==null' in main
+assert 'if(!openSettingsV96)mainHandler.post(()->play(last));' in main
 assert 'onNewIntent(android.content.Intent incoming)' in main
 assert 'navigate("Postavke");' in main
 assert 'private void openAppSettingsV96()' in player
