@@ -133,6 +133,10 @@ replace("playback/TvPlaybackOptionsV94.java",
 '''String[] de={"STREAM","WIEDERGABE","SENDER"};''',
 '''String[] de={"STREAM","WIEDERGABE","SENDER","ANWENDUNG"};''',
 "new option section German")
+replace("playback/TvPlaybackOptionsV94.java",
+'''if(i==0||i==4||i==8){''',
+'''if(i==0||i==4||i==8||i==12){''',
+"fourth options section")
 
 # Localize the exact user-facing dialog controls in the player and main
 # without modifying server names, URLs, programme titles or any network data.
