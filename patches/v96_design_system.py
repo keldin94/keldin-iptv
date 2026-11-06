@@ -101,7 +101,7 @@ s=s.replace('0xff195677','0xff203b53').replace('0xff284c63','0xff283e52')
 p.write_text(s)
 
 p=base/"ui/ChannelAdapter.java"
-s=p.read_text().replace('guideMode?106:164','guideMode?103:142')
+s=p.read_text().replace('guideMode?126:136','guideMode?116:132')
 s=s.replace('lp.setMargins(Ui.dp(c,7),Ui.dp(c,6),Ui.dp(c,7),Ui.dp(c,6));',
             'lp.setMargins(Ui.dp(c,5),Ui.dp(c,4),Ui.dp(c,5),Ui.dp(c,4));')
 p.write_text(s)
