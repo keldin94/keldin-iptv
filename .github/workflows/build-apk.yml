@@ -249,6 +249,26 @@ jobs:
       - name: Test tvOS-inspired layout density and D-pad focus
         run: bash tests/run_v96_design_system.sh
 
+      - name: Apply adaptive text layout and readable player drawers
+        run: python3 patches/v97_adaptive_layout.py
+
+      - name: Add TV Grid over the live video and update OK mini-panel
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp patches/TvGridPanelV97.java app/src/main/java/com/keldin/iptv/playback/TvGridPanelV97.java
+          python3 patches/v97_player_grid_navigation.py
+
+      - name: Audit language defaults and expand TV Grid localization
+        run: python3 patches/v97_i18n_audit_fixes.py
+
+      - name: Upgrade release version to v0.9.7
+        run: python3 patches/v97_version.py
+
+      - name: Test v0.9.7 adaptive layouts, TV grid, D-pad and translations
+        run: bash tests/run_v97_regression.sh
+
+
 
 
 
