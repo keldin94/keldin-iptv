@@ -231,6 +231,12 @@ jobs:
       - name: Test compact mini-player remote boundaries and buttons
         run: bash tests/run_v95_mini_panel_regression.sh
 
+      - name: Apply v0.9.6 compact UI across home, settings, catalog and player
+        run: python3 patches/v96_compact_navigation.py
+
+      - name: Test v0.9.6 global UI density and direct settings navigation
+        run: bash tests/run_v96_compact_regression.sh
+
 
 
 
