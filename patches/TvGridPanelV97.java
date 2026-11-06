@@ -1,7 +1,7 @@
 package com.keldin.iptv.playback;
 
 import android.content.Context;
-import android.graphics.Gravity;
+import android.view.Gravity;
 import android.graphics.drawable.GradientDrawable;
 import android.text.TextUtils;
 import android.view.KeyEvent;
