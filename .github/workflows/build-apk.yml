@@ -375,6 +375,6 @@ jobs:
             --repo "${GITHUB_REPOSITORY}" \
             --target "${GITHUB_SHA}" \
             --title "Keldin IPTV ${APP_VERSION} — Android TV" \
-            --notes "Stable Android TV release. Signed with the permanent Keldin key. In-app updates from newer stable versions preserve playlists and favorites. Imported IPTV playlists can be over 183104 entries; users can select countries before saving." \
+            --notes "v0.9.5: EX-YU Filmski broadcaster categories now appear under Live TV, including existing imported channels. Channel cards display smaller two-line names and available EPG programme titles without repeated category or LIVE badges. Localized missing-guide text and playback states. Improved live rebuffer tolerance and private diagnostics to distinguish buffering from dropped video frames; server/device stutter still requires device confirmation. Permanent signing key and installed playlists/favorites preserved. Signed in-place update." \
             keldin-iptv.apk keldin-iptv.apk.sha256
           rm -f "${KELDIN_SIGNING_FILE}"
