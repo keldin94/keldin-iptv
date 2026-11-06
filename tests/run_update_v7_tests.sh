@@ -9,7 +9,7 @@ python3 - <<'PY'
 from pathlib import Path
 g=Path("app/build.gradle").read_text()
 m=Path("app/src/main/AndroidManifest.xml").read_text()
-assert "versionCode 904" in g and "versionName '0.9.4'" in g
+assert "versionCode 905" in g and "versionName '0.9.5'" in g
 assert "applicationIdSuffix '.updatepreview'" in g
 assert 'android:name="android.permission.REQUEST_INSTALL_PACKAGES"' in m
 assert 'android:authorities="${applicationId}.updateprovider"' in m
