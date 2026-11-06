@@ -16,7 +16,7 @@ assert 'LinearLayout.LayoutParams lp=Ui.lp(this,-1,56)' in s
 assert 'notice.getText().toString().startsWith("Imported ")' in s
 assert 'Color.rgb(10,13,19)' in u and 'Color.rgb(91,170,255)' in u
 assert 'Ui.dp(context,46)' in c and '0xff203b53' in c
-assert 'guideMode?103:142' in a
+assert 'guideMode?116:132' in a
 assert '0xff141b29' in o and '0xff202b3c' in o
 assert 'channelName=Ui.text(this,"",21,Ui.WHITE,true);' in p
 assert 'private boolean navigateQuickRowV95(KeyEvent event)' in p
