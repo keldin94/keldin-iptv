@@ -219,6 +219,13 @@ jobs:
       - name: Test v0.9.4 Back, channel switching, settings identity and remote menus
         run: bash tests/run_v94_regression.sh
 
+      - name: Apply v0.9.5 category classification, EPG card and playback language fixes
+        run: python3 patches/v95_category_cards_locale_playback.py
+
+      - name: Test v0.9.5 live film categories, localization and TV cards
+        run: bash tests/run_v95_regression.sh
+
+
 
       - name: Audit actual player remote and options UI before v0.9.4
         run: python3 tests/v94_player_audit.py
