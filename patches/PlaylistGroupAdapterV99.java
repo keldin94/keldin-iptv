@@ -139,9 +139,11 @@ public final class PlaylistGroupAdapterV99
             }
         });
         h.itemView.setOnFocusChangeListener((v,hasFocus)->{
-            RecyclerView.Adapter<?> a=h.getBindingAdapter();
-            if(a!=null&&h.getBindingAdapterPosition()!=RecyclerView.NO_POSITION)
-                notifyItemChanged(h.getBindingAdapterPosition());
+            GradientDrawable focusBg=Ui.shape(item.header?0xff203448:
+                selected?0xff195677:hasFocus?0xff284c63:Ui.PANEL,10,context);
+            if(hasFocus||selected)focusBg.setStroke(Ui.dp(context,hasFocus?2:1),
+                hasFocus?Ui.ACCENT:0xff3c7194);
+            v.setBackground(focusBg);
         });
     }
     @Override public int getItemCount(){return entries.size();}
