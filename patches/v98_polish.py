@@ -96,12 +96,43 @@ def main(s):
             if(!prefs.getBoolean("return_live_pending_v98",false))return;
             String playedGroup=prefs.getString("return_live_group_v98","Sve kategorije");
             prefs.edit().putBoolean("return_live_pending_v98",false)
-                .putString("selected_group_Uživo",playedGroup).apply();
+                .putString("selected_group_Uživo",playedGroup)
+                .putBoolean("return_live_focus_v98",true).apply();
             page="Uživo";
             selectedGroup=playedGroup;
             render();
         });'''
     s=s[:method.end()]+injection+s[method.end():]
+    # Restore the exact last played card, not just its category.
+    focusAnchor='''        categories.setAdapter(categoryAdapter);'''
+    focusCode='''        if("LIVE".equals(kind)){
+            android.content.SharedPreferences returnPrefsV98=
+                getSharedPreferences("keldin_settings",MODE_PRIVATE);
+            if(returnPrefsV98.getBoolean("return_live_focus_v98",false)){
+                returnPrefsV98.edit().putBoolean("return_live_focus_v98",false).apply();
+                String activeKeyV98=returnPrefsV98.getString("return_live_key_v98","");
+                int targetIndexV98=-1;
+                for(int i=0;i<visible.size();i++){
+                    if(visible.get(i).key().equals(activeKeyV98)){
+                        targetIndexV98=i;
+                        break;
+                    }
+                }
+                if(targetIndexV98>=0){
+                    final int atV98=targetIndexV98;
+                    grid.post(()->{
+                        grid.scrollToPosition(atV98);
+                        grid.post(()->{
+                            RecyclerView.ViewHolder rowV98=
+                                grid.findViewHolderForAdapterPosition(atV98);
+                            if(rowV98!=null)rowV98.itemView.requestFocus();
+                        });
+                    });
+                }
+            }
+        }
+'''
+    s=replace_once(s,focusAnchor,focusAnchor+"\n"+focusCode,"last watched channel focus")
     return s
 edit("ui/MainActivity.java",main)
 
