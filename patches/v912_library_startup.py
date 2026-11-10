@@ -193,18 +193,18 @@ def catalog(s):
 edit("data/CatalogStore.java",catalog)
 
 def main(s):
-    old='''                    if(store.channels().isEmpty()&&!store.sources().isEmpty()){'''
-    new='''                    if(!store.hasAnyActiveChannelsV912()&&!store.sources().isEmpty()){'''
+    old='''                    if(!openSettingsV96 && store.channels().isEmpty()&&!store.sources().isEmpty()){'''
+    new='''                    if(!openSettingsV96 && !store.hasAnyActiveChannelsV912()&&!store.sources().isEmpty()){'''
     s=one(s,old,new,"avoid copying giant list on UI thread")
     old='''                    }else if(savedInstanceState==null&&store.openLastChannelAtStart()){
                         Channel last=store.lastLiveChannel();
                         if(last!=null&&!autoLaunched){
                             autoLaunched=true;
-                            mainHandler.post(()->play(last));
+                            if(!openSettingsV96)mainHandler.post(()->play(last));
                         }
                     }'''
-    new='''                    }else if(savedInstanceState==null&&store.openLastChannelAtStart()
-                            &&!autoLaunched){
+    new='''                    }else if(!openSettingsV96 && savedInstanceState==null
+                            &&store.openLastChannelAtStart()&&!autoLaunched){
                         // Never scan a 350k channel catalogue on the Android UI
                         // thread after Home appears. Also don't auto-launch if
                         // the viewer navigates away before this lookup ends.
