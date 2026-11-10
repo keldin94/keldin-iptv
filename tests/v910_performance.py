@@ -16,7 +16,7 @@ checks={
  "Preview limited to 48 icons":'preview.size()>=48' in side,
  "No full catalog scan while preview focus moves":'for(Channel c:store.channels())' not in side,
  "Bounded asynchronous image work":'new java.util.concurrent.ArrayBlockingQueue<>(24)' in logos and 'newFixedThreadPool' not in logos,
- "Channel switching reuses group list":'cachedGroupChannelsV910' in player and 'cachedGroupIdV910' in player,
+ "Channel switching keeps existing cached group":'cachedLiveGroupV94' in player and 'cachedLiveGroupKeyV94' in player,
  "Browser avoids SHA hashes for unhidden titles":'!hiddenTitles.isEmpty()&&hiddenTitles.contains(' in main,
  "Browser avoids global rescans per category":'filterIndexedV910(' in main and 'sourceItemsV910' in main and 'groupItemsV910' in main,
  "Disabled playlist behavior retained":'isPlaylistActiveV99' in catalog and 'activeSourceIdsV910' in main,
