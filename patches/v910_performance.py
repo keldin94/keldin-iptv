@@ -211,7 +211,8 @@ def main(s):
       '''            String effectiveKind="LIVE".equals(ch.kind)?"LIVE":
                 Channel.isLiveFilmGroup(ch.group,ch.url)?"LIVE":ch.kind;''',
       "no reclassification of already live channels")
-    s=swap(s,'''            if(hiddenTitles.contains(com.keldin.iptv.data.ContentFilterV93.fingerprint(ch.key())))
+    s=swap(s,'''            if(hiddenTitles.contains(
+                com.keldin.iptv.data.ContentFilterV93.fingerprint(ch.key())))
                 continue;''',
       '''            if(!hiddenTitles.isEmpty()&&hiddenTitles.contains(
                 com.keldin.iptv.data.ContentFilterV93.fingerprint(ch.key())))
