@@ -85,6 +85,12 @@ def player(s):
 edit("playback/PlayerActivity.java",player)
 
 def main(s):
+    if "import java.util.LinkedHashMap;" not in s:
+        s=s.replace("import java.util.LinkedHashSet;",
+            "import java.util.LinkedHashMap;\nimport java.util.LinkedHashSet;",1)
+        if "import java.util.LinkedHashMap;" not in s:
+            s=s.replace("package com.keldin.iptv.ui;",
+                "package com.keldin.iptv.ui;\nimport java.util.LinkedHashMap;",1)
     s=change(s,'''    private RecyclerView browseCategoriesV93,browseGridV93;''',
       '''    private RecyclerView browseCategoriesV93,browseGridV93;
     private String selectedSourceV99="";''',"selected source state")
@@ -322,8 +328,7 @@ def main(s):
             enabled[i]=store.isPlaylistActiveV99(src.id);
         }
         new AlertDialog.Builder(this)
-            .setTitle("Active playlists")
-            .setMessage("Select which playlists appear in Live TV, Movies, Series and Search. Disabled playlists remain saved.")
+            .setTitle("Active playlists · Show / Hide")
             .setMultiChoiceItems(labels,enabled,
                 (dialog,which,checked)->enabled[which]=checked)
             .setPositiveButton("Save",(dialog,which)->{
