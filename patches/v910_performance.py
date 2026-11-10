@@ -158,10 +158,6 @@ def logos(s):
             new java.util.concurrent.ArrayBlockingQueue<>(24),
             new java.util.concurrent.ThreadPoolExecutor.DiscardPolicy());''',
     "bounded logo decode and network queue")
-    s=swap(s,'''        synchronized(pending) {
-            if(pending.size()>96)return; // no unbounded requests when scrolling 60k items
-        }
-''','',"remove nonfunctional guard")
     return s
 edit("ui/LogoLoader.java",logos)
 
