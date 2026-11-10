@@ -306,6 +306,12 @@ jobs:
       - name: Check Home navigation memory cleanup and in-place update
         run: python3 tests/v911_home_regression.py
 
+      - name: Apply v0.9.12 fast library cache and nonblocking cold startup
+        run: python3 patches/v912_library_startup.py
+
+      - name: Verify v0.9.12 library cache and startup safety
+        run: python3 tests/v912_library_regression.py
+
 
       - name: Inspect assembled Home render and return navigation for v0.9.11
         run: python3 tests/v911_home_audit.py
