@@ -133,8 +133,8 @@ def side(s):
         '''            for(Channel c:sourceLiveV910){
                 if("LIVE".equals(c.kind)){''',
         "category counts use cached source")
-    s=swap(s,'''        list=null;adapter=null;rows.clear();''',
-        '''        list=null;adapter=null;rows.clear();
+    s=swap(s,'''        list=null;adapter=null;detailInfo=null;rows.clear();''',
+        '''        list=null;adapter=null;detailInfo=null;rows.clear();
         categoryLogoPreviewV98=null;previewGroupV910="";''',
         "release old preview adapter")
     return s
