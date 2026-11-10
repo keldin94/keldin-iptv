@@ -143,7 +143,9 @@ def catalog(s):
         }
     }
 
+    private static final Object FAST_CACHE_LOCK_V912=new Object();
     private void writeFastV912(File json,java.util.List<Channel> snapshot){
+        synchronized(FAST_CACHE_LOCK_V912){
         if(!json.isFile())return;
         // A constrained TV box must never fill the disk with a second copy.
         if(context.getFilesDir().getUsableSpace()<json.length()+24_000_000L)return;
@@ -176,6 +178,7 @@ def catalog(s):
         if(!tmp.renameTo(dest)){
             if(dest.exists())dest.delete();
             if(!tmp.renameTo(dest))tmp.delete();
+        }
         }
     }
 
