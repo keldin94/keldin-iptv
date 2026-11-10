@@ -271,6 +271,12 @@ jobs:
       - name: Test v0.9.7 adaptive layouts, TV grid, D-pad and translations
         run: bash tests/run_v97_regression.sh
 
+      - name: Apply v0.9.8 film broadcaster, navigation and safe-area refinements
+        run: python3 patches/v98_polish.py
+
+      - name: Verify v0.9.8 fixes before building
+        run: python3 tests/v98_regression.py
+
 
 
 
