@@ -300,6 +300,12 @@ jobs:
 
       - name: Verify v0.9.10 performance regression and data identity
         run: python3 tests/v910_performance.py
+      - name: Fix v0.9.11 Home resume crashes and release large channel adapters
+        run: python3 patches/v911_home_stability.py
+
+      - name: Check Home navigation memory cleanup and in-place update
+        run: python3 tests/v911_home_regression.py
+
 
       - name: Inspect assembled Home render and return navigation for v0.9.11
         run: python3 tests/v911_home_audit.py
