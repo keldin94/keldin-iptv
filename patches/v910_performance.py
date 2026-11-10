@@ -161,36 +161,8 @@ def logos(s):
     return s
 edit("ui/LogoLoader.java",logos)
 
-# Avoid recreating the live group from the entire playing queue on each zap.
-def player(s):
-    anchor="    private void rememberLiveReturnV98(){"
-    fields='''    private String cachedGroupIdV910="";
-    private final ArrayList<Channel> cachedGroupChannelsV910=new ArrayList<>();
-
-'''
-    s=swap(s,anchor,fields+anchor,"player channel group cache")
-    pattern='''            ArrayList<Channel> group=new ArrayList<>();
-            for(Channel ch:queue)
-                if(ch.sourceId.equals(current.sourceId)&&ch.group.equals(current.group)
-                    && "LIVE".equals(ch.kind))group.add(ch);'''
-    replacement='''            String groupIdV910=current.sourceId+"|"+current.group;
-            if(!groupIdV910.equals(cachedGroupIdV910)){
-                cachedGroupChannelsV910.clear();
-                for(Channel ch:queue)
-                    if(ch.sourceId.equals(current.sourceId)&&
-                        ch.group.equals(current.group)&&"LIVE".equals(ch.kind))
-                        cachedGroupChannelsV910.add(ch);
-                cachedGroupIdV910=groupIdV910;
-            }
-            ArrayList<Channel> group=cachedGroupChannelsV910;'''
-    s=swap(s,pattern,replacement,"cache channel zap queue by active category")
-    s=swap(s,'''    private void selectOverlayChannel(Channel ch){
-        if(ch==null)return;''',
-      '''    private void selectOverlayChannel(Channel ch){
-        if(ch==null)return;
-        cachedGroupIdV910="";''',"reset zap cache after direct selection")
-    return s
-edit("playback/PlayerActivity.java",player)
+# Remote channel zapping already caches its group in v0.9.4; keep that
+# stable implementation rather than adding a second competing cache.
 
 # Category switches should never recalculate every channel's SHA-256 hash
 # when the user has not hidden any titles, or scan the whole combined list.
