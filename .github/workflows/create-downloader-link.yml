@@ -1,0 +1,27 @@
+name: Create permanent short downloader link
+on:
+  push:
+    paths:
+      - '.github/workflows/create-downloader-link.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  shorten:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Create short public link to latest stable APK
+        shell: bash
+        run: |
+          set -euo pipefail
+          LONG_URL='https://github.com/keldin94/keldin-iptv/releases/latest/download/keldin-iptv.apk'
+          SHORT_URL="$(curl --fail --silent --show-error --max-time 25 --get             --data-urlencode "url=${LONG_URL}" --data-urlencode "format=simple"             'https://is.gd/create.php')"
+          echo "Short downloader link: ${SHORT_URL}"
+          if [[ "${SHORT_URL}" != https://is.gd/* ]]; then
+            echo "::error::Shortener did not return a valid link"
+            exit 1
+          fi
+          echo "Important: this is a web address for Downloader's URL field, NOT an AFTVnews numeric code."
