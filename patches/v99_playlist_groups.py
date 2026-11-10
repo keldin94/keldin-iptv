@@ -56,7 +56,24 @@ def store(s):
     }
 
 '''
-    return change(s,anchor,addition+anchor,"catalog settings API")
+    s=change(s,anchor,addition+anchor,"catalog settings API")
+    s=change(s,
+        '''    public synchronized List<Channel> channels() { return new ArrayList<>(channels); }''',
+        '''    public synchronized List<Channel> allChannelsV99(){
+        return new ArrayList<>(channels);
+    }
+    public synchronized List<Channel> channels(){
+        ArrayList<Channel> visible=new ArrayList<>();
+        for(Channel c:channels)
+            if(isPlaylistActiveV99(c.sourceId))visible.add(c);
+        return visible;
+    }''',"inactive catalog display filtering")
+    s=change(s,
+        '''if(c.key().equals(key)&&"LIVE".equals(c.kind)&&sourceById(c.sourceId)!=null)''',
+        '''if(c.key().equals(key)&&"LIVE".equals(c.kind)
+                    &&isPlaylistActiveV99(c.sourceId)&&sourceById(c.sourceId)!=null)''',
+        "do not open disabled playlist on startup")
+    return s
 edit("data/CatalogStore.java",store)
 
 # Remember source with the channel, not only group: two providers may use same title.
