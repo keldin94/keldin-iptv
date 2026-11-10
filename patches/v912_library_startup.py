@@ -90,7 +90,15 @@ def catalog(s):
             }catch(Exception ignored){}
             // The original text library is retained and can always be read
             // again. Do not cache an incomplete or malformed parse.
-            if(fullyLoaded)writeFastV912(lines);
+            if(fullyLoaded){
+                // First migration takes place after the app may show Home.
+                // Never add the binary write to the Loading Library spinner.
+                java.util.ArrayList<Channel> snapshot=new java.util.ArrayList<>(channels);
+                Thread cacheWorker=new Thread(
+                    ()->writeFastV912(lines,snapshot),"keldin-fast-library");
+                cacheWorker.setPriority(Thread.MIN_PRIORITY);
+                cacheWorker.start();
+            }
             return;
         }'''
     s=s[:start]+new+s[end:]
@@ -135,20 +143,22 @@ def catalog(s):
         }
     }
 
-    private void writeFastV912(File json){
+    private void writeFastV912(File json,java.util.List<Channel> snapshot){
         if(!json.isFile())return;
         // A constrained TV box must never fill the disk with a second copy.
         if(context.getFilesDir().getUsableSpace()<json.length()+24_000_000L)return;
+        final long sourceLength=json.length();
+        final long sourceTime=json.lastModified();
         File tmp=new File(context.getFilesDir(),"catalog-v912.tmp");
         File dest=new File(context.getFilesDir(),"catalog-v912.bin");
         try(java.io.FileOutputStream raw=new java.io.FileOutputStream(tmp);
             java.io.DataOutputStream out=new java.io.DataOutputStream(
                 new java.io.BufferedOutputStream(raw,131072))){
             out.writeInt(CACHE_MAGIC_V912);
-            out.writeLong(json.length());
-            out.writeLong(json.lastModified());
-            out.writeInt(channels.size());
-            for(Channel c:channels){
+            out.writeLong(sourceLength);
+            out.writeLong(sourceTime);
+            out.writeInt(snapshot.size());
+            for(Channel c:snapshot){
                 out.writeUTF(safeStringV912(c.id));
                 out.writeUTF(safeStringV912(c.sourceId));
                 out.writeUTF(safeStringV912(c.name));
@@ -161,6 +171,8 @@ def catalog(s):
             }
             out.flush();
         }catch(Exception failure){tmp.delete();return;}
+        if(!json.isFile()||json.length()!=sourceLength||
+            json.lastModified()!=sourceTime){tmp.delete();return;}
         if(!tmp.renameTo(dest)){
             if(dest.exists())dest.delete();
             if(!tmp.renameTo(dest))tmp.delete();
@@ -173,7 +185,7 @@ def catalog(s):
     # JSONL has been atomically replaced.
     marker='''        new File(context.getFilesDir(),"catalog.json").delete();'''
     s=one(s,marker,'''        new File(context.getFilesDir(),"catalog.json").delete();
-        writeFastV912(dest);''',"refresh binary cache after a successful playlist import")
+        writeFastV912(dest,new java.util.ArrayList<>(channels));''',"refresh binary cache after a successful playlist import")
     return s
 edit("data/CatalogStore.java",catalog)
 
