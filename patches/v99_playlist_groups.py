@@ -36,8 +36,22 @@ def channel(s):
     }
 
 '''
-    return s[:a]+new+s[b:]
+    s=s[:a]+new+s[b:]
+    return change(s,
+        'if(u.contains("/live/")||isLiveFilmGroup(group,url)) return "LIVE";',
+        'if(u.contains("/movie/"))return "MOVIES";\n        if(u.contains("/series/"))return "SERIES";\n        if(u.contains("/live/")||isLiveFilmGroup(group,url)) return "LIVE";',
+        "URL type has priority over group-title")
 edit("data/Channel.java",channel)
+
+def scan(s):
+    needle='''        if(u.contains("/live/")||
+           com.keldin.iptv.data.Channel.isLiveFilmGroup(group,url))return 0;'''
+    replacement='''        if(u.contains("/movie/"))return 1;
+        if(u.contains("/series/"))return 2;
+        if(u.contains("/live/")||
+           com.keldin.iptv.data.Channel.isLiveFilmGroup(group,url))return 0;'''
+    return change(s,needle,replacement,"scan real VOD before mixed film/series group")
+edit("net/CategoryScanV61.java",scan)
 
 # Selection and expansion are local display preferences, never delete catalogue.
 def store(s):
