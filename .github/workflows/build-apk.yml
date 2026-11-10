@@ -277,6 +277,25 @@ jobs:
       - name: Verify v0.9.8 fixes before building
         run: python3 tests/v98_regression.py
 
+      - name: Apply v0.9.9 Filmovi & Serije and per-playlist grouping
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp patches/PlaylistGroupAdapterV99.java app/src/main/java/com/keldin/iptv/ui/PlaylistGroupAdapterV99.java
+          python3 patches/v99_playlist_groups.py
+
+      - name: Test v0.9.9 Live film importer against HBO CineStar sample
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/v99test
+          javac -encoding UTF-8 -d /tmp/v99test \
+            app/src/main/java/com/keldin/iptv/data/Channel.java \
+            app/src/main/java/com/keldin/iptv/net/CategoryScanV61.java \
+            tests/FilmAndPlaylistsV99Test.java
+          java -cp /tmp/v99test FilmAndPlaylistsV99Test
+          python3 tests/v99_regression.py
+
 
 
 
