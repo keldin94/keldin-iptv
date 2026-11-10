@@ -295,6 +295,12 @@ jobs:
             tests/FilmAndPlaylistsV99Test.java
           java -cp /tmp/v99test FilmAndPlaylistsV99Test
           python3 tests/v99_regression.py
+      - name: Optimize v0.9.10 TV Grid, source lookup, categories and image loading
+        run: python3 patches/v910_performance.py
+
+      - name: Verify v0.9.10 performance regression and data identity
+        run: python3 tests/v910_performance.py
+
 
 
 
