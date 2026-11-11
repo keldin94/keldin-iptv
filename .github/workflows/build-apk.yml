@@ -340,6 +340,30 @@ jobs:
       - name: Inspect EPG network parser and MainActivity startup lifecycle
         run: python3 tests/v917_epg_runtime_audit.py
 
+      - name: Add KELDIN Studio, resilient M3U imports and automatic EPG
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp patches/StudioHomeV917.java app/src/main/java/com/keldin/iptv/ui/StudioHomeV917.java
+          python3 patches/v917_studio_theme.py
+          python3 patches/v917_import_reliability.py
+          python3 patches/v917_auto_epg.py
+
+      - name: Test five original themes, KELDIN Studio, EPG and M3U import safety
+        run: python3 tests/v917_regression.py
+
+      - name: Test actual XMLTV provider query links and channel schedule matching
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/v917-epg-test
+          javac -encoding UTF-8 -d /tmp/v917-epg-test \
+            app/src/main/java/com/keldin/iptv/data/PlaylistSource.java \
+            app/src/main/java/com/keldin/iptv/data/GuideProgram.java \
+            app/src/main/java/com/keldin/iptv/net/EpgParser.java \
+            tests/EpgAutoV917Test.java
+          java -cp /tmp/v917-epg-test EpgAutoV917Test
+
       - name: Test EX YU live category with 54 HBO and CineStar sample channels
         shell: bash
         run: |
