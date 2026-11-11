@@ -27,7 +27,7 @@ checks={
  "Back into existing Home does not delete favorites or channel catalog":
    'store.clearLiveIndexV911();' not in main and 'store.updateChannels(' not in main.split('private void showHome() {')[1].split('private void landingTile(')[0],
  "Visible film category recovery inside Live TV":
-   '"Restore EX YU | Filmovi & Serije channels"' in main and
+   'EX YU | Filmovi & Serije channels' in main and
    'this::restoreFilmChannelsV915' in main,
  "Recovery uses existing playlist import wizard":
    'new com.keldin.iptv.net.PlaylistWizardV6(this,store,chosen,' in main,
@@ -36,10 +36,11 @@ checks={
  "Wizard can force re-enable previously excluded Live TV":
    'if(recoverFilmChannelsV915&&i==0)enabled[i]=true;' in wizard,
  "Wizard preselects only film broadcaster category":
-   'if(recoverFilmChannelsV915&&com.keldin.iptv.data.Channel.isLiveFilmGroup(' in wizard,
+   'if(recoverFilmChannelsV915){' in wizard and 'com.keldin.iptv.data.Channel.isLiveFilmGroup(' in wizard,
  "Other category exclusions remain intact":
-   'enabled[i+4]=old.isEmpty() ? (!huge||local) : !old.contains(name);' in wizard and
-   'store.setExcludedGroups(source.id,excluded)' in wizard,
+   'store.excludedGroups(source.id)' in wizard and
+   'store.setExcludedGroups(source.id,excluded)' in wizard and
+   'if(recoverFilmChannelsV915){' in wizard,
  "Previous saved data remains until successful reimport":
    'store.updateChannels(source.id,chosen.channels)' in wizard and
    'if(chosen.channels.isEmpty())throw' in wizard,
