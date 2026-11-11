@@ -312,6 +312,12 @@ jobs:
       - name: Verify v0.9.12 library cache and startup safety
         run: python3 tests/v912_library_regression.py
 
+      - name: Fix v0.9.13 Settings return crash and simplify player drawer
+        run: python3 patches/v913_back_and_settings.py
+
+      - name: Test v0.9.13 navigation and one-column category view
+        run: python3 tests/v913_navigation_regression.py
+
 
       - name: Inspect assembled Home render and return navigation for v0.9.11
         run: python3 tests/v911_home_audit.py
