@@ -433,7 +433,7 @@ jobs:
           # with a different certificate would not preserve user settings.
           PREVIOUS="${RUNNER_TEMP}/previous-stable"
           mkdir -p "${PREVIOUS}"
-          gh release download v0.9.10 -p 'keldin-iptv.apk' --dir "${PREVIOUS}" \
+          gh release download v0.9.12 -p 'keldin-iptv.apk' --dir "${PREVIOUS}" \
             --repo "${GITHUB_REPOSITORY}"
           PREV_INFO="$("${SIGNER}" verify --print-certs "${PREVIOUS}/keldin-iptv.apk")"
           NEXT_INFO="$("${SIGNER}" verify --print-certs keldin-iptv.apk)"
@@ -449,10 +449,10 @@ jobs:
             exit 1
           fi
           if [ "${PREV_CERT}" != "${NEXT_CERT}" ]; then
-            echo "::error::Signing certificate differs from v0.9.10. Update stopped to protect app data."
+            echo "::error::Signing certificate differs from v0.9.12. Update stopped to protect app data."
             exit 1
           fi
-          echo "Signing certificate unchanged from v0.9.10; in-place settings retention protected."
+          echo "Signing certificate unchanged from v0.9.12; in-place settings retention protected."
 
           APK_DUMP="$(find "${ANDROID_HOME}/build-tools" -type f -name aapt | sort -V | tail -n 1)"
           PACKAGE_LINE="$("${APK_DUMP}" dump badging keldin-iptv.apk | grep "^package:")"
@@ -468,6 +468,6 @@ jobs:
             --repo "${GITHUB_REPOSITORY}" \
             --target "${GITHUB_SHA}" \
             --title "Keldin IPTV ${APP_VERSION} — Android TV" \
-            --notes "v0.9.11 stability update: Fixed redundant Home redraws after leaving Live TV or the player, explicitly detached heavy channel/category RecyclerView adapters before returning Home, released cached live-channel indexes on Home, and ignored late player-return callbacks when navigation has changed. Reduced persistent logo memory on low-RAM Android TV boxes. Retains optimized TV Grid, source-grouped categories, EX YU | Filmovi & Serije, per-playlist activation, all saved IPTV lists, favorites, settings and in-place update signing. On-device testing is still needed to establish whether any remaining force-close originates in Android memory management or elsewhere. One stable shorter download link: https://is.gd/01TB0s" \
+            --notes "v0.9.13: Fixed Settings being overridden by a delayed Live TV return; cleared stale return flags when opening Settings or Home. Corrected player Back lifecycle to avoid unintended returns, removed unsafe RecyclerView adapter changes during Back, and simplified the left-side channel/category overlay to a single column without an extra logo grid. Existing playlists, favorites, settings, film categories and fast library loading are retained." \
             keldin-iptv.apk keldin-iptv.apk.sha256
           rm -f "${KELDIN_SIGNING_FILE}"
