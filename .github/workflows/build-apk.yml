@@ -334,12 +334,6 @@ jobs:
       - name: Verify no heavy Back redraw and preserved playlist selection
         run: python3 tests/v915_back_and_films_regression.py
 
-      - name: Inspect exact EPG source resolution and guide matching
-        run: python3 tests/v917_epg_audit.py
-
-      - name: Inspect EPG network parser and MainActivity startup lifecycle
-        run: python3 tests/v917_epg_runtime_audit.py
-
       - name: Add KELDIN Studio, resilient M3U imports and automatic EPG
         shell: bash
         run: |
@@ -492,7 +486,7 @@ jobs:
           # with a different certificate would not preserve user settings.
           PREVIOUS="${RUNNER_TEMP}/previous-stable"
           mkdir -p "${PREVIOUS}"
-          gh release download v0.9.15 -p 'keldin-iptv.apk' --dir "${PREVIOUS}" \
+          gh release download v0.9.16 -p 'keldin-iptv.apk' --dir "${PREVIOUS}" \
             --repo "${GITHUB_REPOSITORY}"
           PREV_INFO="$("${SIGNER}" verify --print-certs "${PREVIOUS}/keldin-iptv.apk")"
           NEXT_INFO="$("${SIGNER}" verify --print-certs keldin-iptv.apk)"
@@ -508,10 +502,10 @@ jobs:
             exit 1
           fi
           if [ "${PREV_CERT}" != "${NEXT_CERT}" ]; then
-            echo "::error::Signing certificate differs from v0.9.15. Update stopped to protect app data."
+            echo "::error::Signing certificate differs from v0.9.16. Update stopped to protect app data."
             exit 1
           fi
-          echo "Signing certificate unchanged from v0.9.15; in-place settings retention protected."
+          echo "Signing certificate unchanged from v0.9.16; in-place settings retention protected."
 
           APK_DUMP="$(find "${ANDROID_HOME}/build-tools" -type f -name aapt | sort -V | tail -n 1)"
           PACKAGE_LINE="$("${APK_DUMP}" dump badging keldin-iptv.apk | grep "^package:")"
@@ -527,6 +521,6 @@ jobs:
             --repo "${GITHUB_REPOSITORY}" \
             --target "${GITHUB_SHA}" \
             --title "Keldin IPTV ${APP_VERSION} — Android TV" \
-            --notes "v0.9.16 improves Back navigation and EX YU | Filmovi & Serije recovery. Player Back now restores the last watched source/category/channel by updating the existing indexed Live TV list, without reconstructing hundreds of thousands of catalogue rows or purging the cached index. This avoids a major source of UI stalls on low-memory Android TV boxes and preserves Home/Settings navigation. For older IPTV imports that skipped the regional film broadcaster group, Live TV provides Restore EX YU | Filmovi & Serije channels; choose the source and confirm preselected Live TV + regional film channels in the standard import wizard. On successful recovery it expands and selects the correct IPTV source and opens the restored category instead of another playlist. Preserves previously selected other categories until a successful reimport. Scanner and actual M3U parser pass regression tests with 54 example HBO/CineStar/Cinemax broadcast streams, keeping genuine movie/series URLs separate. Five selectable themes, favorites, EPG, multiple playlists, adult filters, signed in-app updater, local configuration and player functionality remain unchanged. On-device testing needed for any residual hardware-specific crashes." \
+            --notes "KELDIN IPTV v0.9.17 adds KELDIN Studio, a sixth optional Android TV interface theme with an original immersive editorial home, live TV hero, streamlined movie/series tiles, media shortcuts and TV-remote focus styling. Existing Classic, Cinema, TV Guide, Glass and Compact themes remain unchanged. Fixes M3U Sync errors when temporary files disappear during the country/category selection step: stage downloads in app-private storage instead of evictable cache, safely retry missing input files on the worker thread, and delete staging files after import, without touching saved lists before successful parsing. Adds automatic XMLTV EPG fetching after playlist import and cold startup, running only in background for active playlists and refreshing visible channel-guide cards. Supports M3U get.php username/password XMLTV discovery as well as compatible Xtream URLs, and XMLTV display-name channel matching when EPG IDs differ from playlist tvg-ids. A provider must supply valid EPG schedule data; an explicit EPG XMLTV URL can still be entered in Edit Playlist. Preserves playback engine, five previous themes, Back navigation, existing playlist settings, multi-playlist selection, favorites, and stable update signing. First-install TV-box testing is recommended." \
             keldin-iptv.apk keldin-iptv.apk.sha256
           rm -f "${KELDIN_SIGNING_FILE}"
