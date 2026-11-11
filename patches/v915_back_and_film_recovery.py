@@ -77,8 +77,24 @@ def main(s):
             if("Uživo".equals(page)){
                 selectedGroup=playedGroup;
                 selectedSourceV99=prefs.getString("return_live_source_v99","");
+                // Update only the already-indexed category's rows and focus,
+                // without constructing a second 150k-entry catalogue.
+                if(restoreLiveSelectionV915!=null)
+                    restoreLiveSelectionV915.accept(selectedSourceV99,selectedGroup);
             }'''
     s=change(s,old,new,"avoid synchronous entire-grid rebuild after Back")
+    s=change(s,
+        '''    private long navigationGenerationV911=0;''',
+        '''    private long navigationGenerationV911=0;
+    private java.util.function.BiConsumer<String,String> restoreLiveSelectionV915;''',
+        "keep one fast return callback for the existing live browse grid")
+    s=change(s,
+        '''        navigationGenerationV911++;
+        if("Postavke".equals(destination)||"Početna".equals(destination)){''',
+        '''        navigationGenerationV911++;
+        if(!"Uživo".equals(destination))restoreLiveSelectionV915=null;
+        if("Postavke".equals(destination)||"Početna".equals(destination)){''',
+        "release live browse callback when leaving the screen")
     s=change(s,
         '''            releaseHeavyBrowseV911();
             store.clearLiveIndexV911();''',
@@ -111,6 +127,37 @@ def main(s):
             }
         }'''
     part=change(part,needle,inject,"repair missing category on Live TV screen")
+    part=change(part,
+        '''        categories.setAdapter(listAdapter);''',
+        '''        categories.setAdapter(listAdapter);
+        if("Uživo".equals(page)){
+            restoreLiveSelectionV915=(sourceId,group)->{
+                if(!"Uživo".equals(page)||grid.getParent()==null)return;
+                ArrayList<Channel> restored=filterIndexedV910(
+                    sourceItemsV910,groupItemsV910,sourceId,group);
+                if(channelCards!=null)channelCards.setItems(restored);
+                count.setText(restored.size()+" "+tr("items")+"  •  "+group);
+                String lastKey=getSharedPreferences("keldin_settings",MODE_PRIVATE)
+                    .getString("return_live_key_v98","");
+                int found=0;
+                for(int i=0;i<restored.size();i++)
+                    if(restored.get(i).key().equals(lastKey)){
+                        found=i;break;
+                    }
+                final int focusIndex=found;
+                grid.post(()->{
+                    if(!"Uživo".equals(page))return;
+                    grid.scrollToPosition(focusIndex);
+                    grid.post(()->{
+                        if(!"Uživo".equals(page))return;
+                        RecyclerView.ViewHolder item=
+                            grid.findViewHolderForAdapterPosition(focusIndex);
+                        if(item!=null)item.itemView.requestFocus();
+                    });
+                });
+            };
+        }''',
+        "fast last-channel restore in existing indexed grid")
     s=s[:begin]+part+s[end:]
     marker='''    private void showChannelGrid(boolean guideMode) {'''
     methods='''    private void restoreFilmChannelsV915(){
