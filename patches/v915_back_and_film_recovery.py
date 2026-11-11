@@ -38,13 +38,19 @@ def wizard(s):
             if(recoverFilmChannelsV915&&i==0)enabled[i]=true;''',
         "re-enable Live TV for film broadcaster recovery")
     s=change(s,
-        '''            enabled[i+4]=old.isEmpty() ? (!huge||local) : !old.contains(name);''',
-        '''            enabled[i+4]=old.isEmpty() ? (!huge||local) : !old.contains(name);
-            // Explicit repair of a previously skipped live TV broadcaster group.
-            // This affects ONLY these groups and respects all other old selections.
-            if(recoverFilmChannelsV915&&com.keldin.iptv.data.Channel.isLiveFilmGroup(
-                    name,"http://localhost/live/film"))enabled[i+4]=true;''',
-        "always select broadcaster category in dedicated repair")
+        '''        String explanation="Select the countries and categories you watch. "+''',
+        '''        // The standard chooser may have its own local/country filters.
+        // In recovery mode only, restore Live and the previously missing
+        // broadcaster categories after those normal defaults are computed.
+        if(recoverFilmChannelsV915){
+            enabled[0]=true;
+            for(int i=0;i<groups.size();i++)
+                if(com.keldin.iptv.data.Channel.isLiveFilmGroup(
+                        groups.get(i),"http://localhost/live/film"))
+                    enabled[i+4]=true;
+        }
+        String explanation="Select the countries and categories you watch. "+''',
+        "recover live film group after all default selections")
     s=change(s,
         '''        if(warning!=null)explanation+="\\n\\n"+warning;''',
         '''        if(recoverFilmChannelsV915)
