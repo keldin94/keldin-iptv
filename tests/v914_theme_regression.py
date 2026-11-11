@@ -11,7 +11,7 @@ update=(base/"updates/AppUpdateManager.java").read_text()
 gradle=Path("app/build.gradle").read_text()
 
 checks={
-"Five independently selectable skins":all("public static final int "+key+"=" in skin
+"Five independently selectable skins":all(re.search(r'\b'+key+r'\s*=\s*\d+',skin)
     for key in ["CLASSIC","CINEMA","GUIDE","GLASS","COMPACT"]),
 "Persistent theme selection without modifying sources":
     'getInt(KEY,CLASSIC)' in skin and '.putInt(KEY,choice).apply()' in skin,
@@ -45,7 +45,11 @@ checks={
     "applicationId 'com.keldin.iptv'" in gradle,
 "Version 0.9.14":'versionCode 914' in gradle and "versionName '0.9.14'" in gradle
 }
+failed=[]
 for label,passed in checks.items():
-    if not passed:raise AssertionError("v0.9.14: "+label)
-    print("PASS",label)
+    if passed:print("PASS",label)
+    else:
+        print("FAIL",label)
+        failed.append(label)
+if failed:raise AssertionError("v0.9.14: "+", ".join(failed))
 print("PASS five complete theme variants, layout and player update checks")
