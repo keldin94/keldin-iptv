@@ -443,7 +443,7 @@ jobs:
           # with a different certificate would not preserve user settings.
           PREVIOUS="${RUNNER_TEMP}/previous-stable"
           mkdir -p "${PREVIOUS}"
-          gh release download v0.9.12 -p 'keldin-iptv.apk' --dir "${PREVIOUS}" \
+          gh release download v0.9.13 -p 'keldin-iptv.apk' --dir "${PREVIOUS}" \
             --repo "${GITHUB_REPOSITORY}"
           PREV_INFO="$("${SIGNER}" verify --print-certs "${PREVIOUS}/keldin-iptv.apk")"
           NEXT_INFO="$("${SIGNER}" verify --print-certs keldin-iptv.apk)"
@@ -459,10 +459,10 @@ jobs:
             exit 1
           fi
           if [ "${PREV_CERT}" != "${NEXT_CERT}" ]; then
-            echo "::error::Signing certificate differs from v0.9.12. Update stopped to protect app data."
+            echo "::error::Signing certificate differs from v0.9.13. Update stopped to protect app data."
             exit 1
           fi
-          echo "Signing certificate unchanged from v0.9.12; in-place settings retention protected."
+          echo "Signing certificate unchanged from v0.9.13; in-place settings retention protected."
 
           APK_DUMP="$(find "${ANDROID_HOME}/build-tools" -type f -name aapt | sort -V | tail -n 1)"
           PACKAGE_LINE="$("${APK_DUMP}" dump badging keldin-iptv.apk | grep "^package:")"
@@ -478,6 +478,6 @@ jobs:
             --repo "${GITHUB_REPOSITORY}" \
             --target "${GITHUB_SHA}" \
             --title "Keldin IPTV ${APP_VERSION} — Android TV" \
-            --notes "v0.9.13: Fixed Settings being overridden by a delayed Live TV return; cleared stale return flags when opening Settings or Home. Corrected player Back lifecycle to avoid unintended returns, removed unsafe RecyclerView adapter changes during Back, and simplified the left-side channel/category overlay to a single column without an extra logo grid. Existing playlists, favorites, settings, film categories and fast library loading are retained." \
+            --notes "v0.9.14 introduces five genuinely different, selectable Android TV interface layouts in Settings > Appearance: KELDIN Classic (refined standard dashboard), KELDIN Cinema (featured movie home and horizontal movie category ribbon), KELDIN TV Guide (EPG-first navigation and wider TV rails), KELDIN Glass (floating translucent cards), and KELDIN Compact (denser navigation and channel grids). Each skin also adjusts playback mini-panel styling and category grid density while keeping the same player, D-pad commands, channel library and filtering. Added a direct Check for updates action in the player three-dot menu using the existing signed GitHub update verifier. Fixed focus clipping in the player controls and expanded Cinema category ribbon height. Theme selection persists locally across restarts and future upgrades. IPTV sources, active list choices, favorites, languages, parental controls, guide settings and all saved settings are preserved." \
             keldin-iptv.apk keldin-iptv.apk.sha256
           rm -f "${KELDIN_SIGNING_FILE}"
