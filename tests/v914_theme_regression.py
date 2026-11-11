@@ -16,7 +16,7 @@ checks={
 "Persistent theme selection without modifying sources":
     'getInt(KEY,CLASSIC)' in skin and '.putInt(KEY,choice).apply()' in skin,
 "Visual theme previews":"fakePreview(" in skin and 'showGallery(' in skin,
-"Default Classic layout":"private static final String[] LABELS' in skin and 'KELDIN Classic' in skin,
+"Default Classic layout":'private static final String[] LABELS' in skin and 'KELDIN Classic' in skin,
 "Cinema hero and featured movie navigation":'"THE CINEMA"' in skin and '"Filmovi",nav,1,232' in skin,
 "TV guide-focused Home opens real EPG":'"TV GUIDE"' in skin and '"TV vodič",nav,1,300' in skin,
 "Glass has translucent panels":'theme==GLASS?0xa62b405b' in skin,
