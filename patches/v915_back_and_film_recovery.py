@@ -180,7 +180,18 @@ def main(s):
                 new com.keldin.iptv.net.PlaylistWizardV6(this,store,chosen,
                     (success,msg)->{
                         message(msg);
-                        if(success)navigate("Uživo");
+                        if(success){
+                            // Show the repaired source immediately. A collapsed
+                            // source or previously selected other provider can
+                            // otherwise make the restored category seem missing.
+                            store.setPlaylistCollapsedV99(chosen.id,false);
+                            selectedSourceV99=chosen.id;
+                            getSharedPreferences("keldin_settings",MODE_PRIVATE).edit()
+                                .putString("selected_source_Uživo",chosen.id)
+                                .putString("selected_group_Uživo",
+                                    "EX YU | Filmovi & Serije").apply();
+                            navigate("Uživo");
+                        }
                     },true).start();
             })
             .setNegativeButton(tr("cancel"),null).show();
