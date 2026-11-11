@@ -135,12 +135,12 @@ def panel(s):
         panel=new FrameLayout(ctx);''',
         "release old side panel list without mutating during layout")
     # Match narrower Apple-like overlay rather than a near-half-screen panel.
-    s=one(s,
-        '''        int panelWidth=Math.min((int)(screenWidth*.41f),Ui.dp(ctx,570));''',
-        '''        int panelWidth=mode==GUIDE
+    import re
+    match=re.search(r'        int panelWidth=[^\\n]+;',s)
+    if not match:raise AssertionError("panelWidth declaration not found")
+    s=s[:match.start()]+'''        int panelWidth=mode==GUIDE
             ?Math.min((int)(screenWidth*.35f),Ui.dp(ctx,500))
-            :Math.min((int)(screenWidth*.30f),Ui.dp(ctx,440));''',
-        "single-column left panel width 30%")
+            :Math.min((int)(screenWidth*.30f),Ui.dp(ctx,440));'''+s[match.end():]
     return s
 edit("playback/TvSidePanel.java",panel)
 
