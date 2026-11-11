@@ -55,7 +55,7 @@ checks={
    'rememberLiveReturnV98' in player,
  "Same app identity and preserved install data":
    "applicationId 'com.keldin.iptv'" in gradle and
-   'versionCode 915' in gradle and "versionName '0.9.15'" in gradle,
+   'versionCode 916' in gradle and "versionName '0.9.16'" in gradle,
 }
 failed=[]
 for name,ok in checks.items():
