@@ -69,7 +69,7 @@ def main(s):
         '''        LinearLayout.LayoutParams rail=Ui.lp(this,215,-1);
         rail.rightMargin=Ui.dp(this,9);''',
         '''        LinearLayout.LayoutParams rail=(skinV914==ThemeV914.CINEMA&&isPosters)
-            ?Ui.lp(this,-1,88)
+            ?Ui.lp(this,-1,120)
             :Ui.lp(this,ThemeV914.railWidth(skinV914),-1);
         rail.rightMargin=Ui.dp(this,9);
         rail.bottomMargin=Ui.dp(this,skinV914==ThemeV914.CINEMA&&isPosters?7:0);''',
