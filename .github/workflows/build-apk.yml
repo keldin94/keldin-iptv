@@ -334,6 +334,9 @@ jobs:
       - name: Verify no heavy Back redraw and preserved playlist selection
         run: python3 tests/v915_back_and_films_regression.py
 
+      - name: Inspect exact EPG source resolution and guide matching
+        run: python3 tests/v917_epg_audit.py
+
       - name: Test EX YU live category with 54 HBO and CineStar sample channels
         shell: bash
         run: |
