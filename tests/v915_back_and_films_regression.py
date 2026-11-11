@@ -16,6 +16,12 @@ checks={
    '.putString("selected_group_Uživo",playedGroup)' in main and
    '.putString("selected_source_Uživo",' in main and
    'return_live_key_v98' in main,
+ "Back restores the channel via existing grouped index, not full render":
+   'restoreLiveSelectionV915.accept(selectedSourceV99,selectedGroup)' in main
+   and 'filterIndexedV910(' in main
+   and 'item.itemView.requestFocus()' in main,
+ "Live return callback cleared on navigation away":
+   'if(!"Uživo".equals(destination))restoreLiveSelectionV915=null;' in main,
  "No synchronous live index purge on Home":
    'store.clearLiveIndexV911();' not in main,
  "Back into existing Home does not delete favorites or channel catalog":
