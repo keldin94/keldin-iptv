@@ -328,6 +328,25 @@ jobs:
       - name: Test themes, Appearance gallery, TV controls and updater
         run: python3 tests/v914_theme_regression.py
 
+      - name: Apply v0.9.15 Back navigation and missing film TV recovery
+        run: python3 patches/v915_back_and_film_recovery.py
+
+      - name: Verify no heavy Back redraw and preserved playlist selection
+        run: python3 tests/v915_back_and_films_regression.py
+
+      - name: Test EX YU live category with 54 HBO and CineStar sample channels
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/v915-film-test
+          javac -encoding UTF-8 -d /tmp/v915-film-test \
+            app/src/main/java/com/keldin/iptv/data/Channel.java \
+            app/src/main/java/com/keldin/iptv/net/CategoryScanV61.java \
+            app/src/main/java/com/keldin/iptv/net/M3uParser.java \
+            tests/FilmChannelsV915Test.java
+          java -cp /tmp/v915-film-test FilmChannelsV915Test
+
+
 
       - name: Inspect assembled Home render and return navigation for v0.9.11
         run: python3 tests/v911_home_audit.py
