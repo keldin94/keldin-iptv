@@ -33,7 +33,7 @@ checks={
 "Each skin has different browse grid density":'ThemeV914.gridColumns(skinV914,isPosters)' in main,
 "Player chrome style only when showing controls":
     'if(visible&&overlay!=null)' in player and 'ThemeV914.stylePlayer(this,overlay)' in player,
-"Player has a new update action":"\"Check for updates\"' in player and 'case 13:com.keldin.iptv.updates.AppUpdateManager.check(this,true)' in player,
+"Player has a new update action":'"Check for updates"' in player and 'case 13:com.keldin.iptv.updates.AppUpdateManager.check(this,true)' in player,
 "Options icon and descriptions present":
     '↻","▣"' in options and 'Check for a newer signed application version' in options
     and 'Provjeri i instaliraj novu verziju aplikacije' in options,
