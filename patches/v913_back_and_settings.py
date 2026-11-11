@@ -136,7 +136,7 @@ def panel(s):
         "release old side panel list without mutating during layout")
     # Match narrower Apple-like overlay rather than a near-half-screen panel.
     import re
-    match=re.search(r'        int panelWidth=[^\\n]+;',s)
+    match=re.search(r'        int panelWidth=[^\n]+;',s)
     if not match:raise AssertionError("panelWidth declaration not found")
     s=s[:match.start()]+'''        int panelWidth=mode==GUIDE
             ?Math.min((int)(screenWidth*.35f),Ui.dp(ctx,500))
