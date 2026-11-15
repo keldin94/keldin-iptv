@@ -47,6 +47,13 @@ checks={
   "Failed import restores old active source, without deleting its data":
       'store.restoreLibraryAfterImportV918();' in wizard
       and 'readPlaylistV918(activePlaylistV918)' in catalog,
+  "Import completion only fires after resident source is restored":
+      'importSuccessV918=message;' in wizard
+      and 'if(importSuccessV918!=null)' in wizard
+      and wizard.index('store.restoreLibraryAfterImportV918();') <
+          wizard.index('if(importSuccessV918!=null)'),
+  "No destructive legacy save helper remains":
+      'persistSourceV918(activePlaylistV918,new ArrayList<>(channels))' in catalog,
   "Only active source can trigger post-import EPG":
       'if(store.isPlaylistActiveV99(source.id)&&' in wizard,
   "Single-choice radio replaces multi-select and removes Enable all":
