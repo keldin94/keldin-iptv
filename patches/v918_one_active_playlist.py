@@ -270,6 +270,16 @@ def catalog(s):
                     if(!activePlaylistV918.equals(o.optString("sourceId")))continue;
                     Channel c = new Channel();'''
     s=swap(s,old,new,"legacy JSON also loads one selected source")
+    # Also safeguard the legacy save helper against future callers.
+    begin=s.index("    private void saveChannels() {")
+    end=s.index("\n    }",begin)+len("\n    }")
+    s=s[:begin]+'''    private void saveChannels(){
+        try{
+            persistSourceV918(activePlaylistV918,new ArrayList<>(channels));
+        }catch(java.io.IOException failure){
+            throw new IllegalStateException("Could not preserve inactive playlists",failure);
+        }
+    }'''+s[end:]
     return s
 modify("data/CatalogStore.java",catalog)
 
@@ -385,13 +395,26 @@ def wizard(s):
     old='''            try(BufferedReader reader=new BufferedReader(new InputStreamReader(
                     new FileInputStream(requireStagingV917()),StandardCharsets.UTF_8),65536)){'''
     new='''            store.suspendLibraryForImportV918();
+            M3uParser.Result parsedV918=null;
             try(BufferedReader reader=new BufferedReader(new InputStreamReader(
                     new FileInputStream(requireStagingV917()),StandardCharsets.UTF_8),65536)){'''
     s=swap(s,old,new,"release resident channels while importing second provider")
+
     old='''            }catch(Exception e){
                 String err=e.getMessage()==null?"Failed to save playlist.":e.getMessage();'''
     new='''            }catch(Exception e){
                 String err=e.getMessage()==null?"Failed to save playlist.":e.getMessage();'''
+    s=swap(s,
+      '''                M3uParser.Result chosen=M3uParser.parse(reader,source.id,source.playlistUrl(),''',
+      '''                M3uParser.Result chosen=M3uParser.parse(reader,source.id,source.playlistUrl(),''',
+      "recognize import parse call") 
+    # Keep a direct reference to the parse result so its large temporary
+    # list can be cleared before restoring the old active source.
+    s=swap(s,
+      '''                if(chosen.channels.isEmpty())throw new IOException("No items match the selected categories.");''',
+      '''                parsedV918=chosen;
+                if(chosen.channels.isEmpty())throw new IOException("No items match the selected categories.");''',
+      "retain parse result for bounded memory cleanup")
     # Recovery also happens if parsing fails, without deleting either source.
     needle='''            }
         });
@@ -410,6 +433,7 @@ def wizard(s):
     # of active source already holds chosen channels so no extra read.
     block=block.replace('''        });
     }''','''            finally{
+                if(parsedV918!=null)parsedV918.channels.clear();
                 try{store.restoreLibraryAfterImportV918();}
                 catch(Exception ignored){}
             }
