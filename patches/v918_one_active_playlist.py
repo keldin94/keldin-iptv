@@ -396,6 +396,7 @@ def wizard(s):
                     new FileInputStream(requireStagingV917()),StandardCharsets.UTF_8),65536)){'''
     new='''            store.suspendLibraryForImportV918();
             M3uParser.Result parsedV918=null;
+            String importSuccessV918=null;
             try(BufferedReader reader=new BufferedReader(new InputStreamReader(
                     new FileInputStream(requireStagingV917()),StandardCharsets.UTF_8),65536)){'''
     s=swap(s,old,new,"release resident channels while importing second provider")
@@ -415,6 +416,12 @@ def wizard(s):
       '''                parsedV918=chosen;
                 if(chosen.channels.isEmpty())throw new IOException("No items match the selected categories.");''',
       "retain parse result for bounded memory cleanup")
+    # Defer the success message until after the former active library has
+    # been restored; otherwise the UI could render the list while it is empty.
+    s=swap(s,
+      '''                ui.post(()->complete(true,message));''',
+      '''                importSuccessV918=message;''',
+      "success only after restoring the active catalogue")
     # Recovery also happens if parsing fails, without deleting either source.
     needle='''            }
         });
@@ -436,6 +443,10 @@ def wizard(s):
                 if(parsedV918!=null)parsedV918.channels.clear();
                 try{store.restoreLibraryAfterImportV918();}
                 catch(Exception ignored){}
+            }
+            if(importSuccessV918!=null){
+                final String completedV918=importSuccessV918;
+                ui.post(()->complete(true,completedV918));
             }
         });
     }''',1)
