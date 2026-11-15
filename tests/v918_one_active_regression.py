@@ -83,12 +83,12 @@ checks={
       and 'Restore EX YU | Filmovi & Serije channels' in main,
   "Same Android package for in-place update":
       "applicationId 'com.keldin.iptv'" in gradle
-      and "versionCode 918" in gradle
-      and "versionName '0.9.18'" in gradle,
+      and "versionCode 919" in gradle
+      and "versionName '0.9.19'" in gradle,
 }
 failed=[]
 for name,result in checks.items():
     print(("PASS " if result else "FAIL ")+name)
     if not result:failed.append(name)
 if failed:raise AssertionError("Single playlist regression: "+"; ".join(failed))
-print("PASS 0.9.18 one resident source; inactive sources retained on disk")
+print("PASS 0.9.19 one resident source; inactive sources retained on disk")
