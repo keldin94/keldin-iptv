@@ -324,8 +324,7 @@ def main(s):
             if(store.isPlaylistActiveV99(src.id))selected=i;
         }
         new AlertDialog.Builder(this)
-            .setTitle("Choose active IPTV playlist")
-            .setMessage("Only one list is loaded at a time. All others are saved.")
+            .setTitle("Choose active IPTV playlist  ·  One at a time")
             .setSingleChoiceItems(labels,selected,(dialog,index)->{
                 dialog.dismiss();
                 activatePlaylistV918(sources.get(index));
