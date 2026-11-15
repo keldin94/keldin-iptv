@@ -3,6 +3,7 @@ base=Path("app/src/main/java/com/keldin/iptv")
 catalog=(base/"data/CatalogStore.java").read_text()
 main=(base/"ui/MainActivity.java").read_text()
 wizard=(base/"net/PlaylistWizardV6.java").read_text()
+localSync=(base/"net/PlaylistSync.java").read_text()
 player=(base/"playback/PlayerActivity.java").read_text()
 themes=(base/"ui/ThemeV914.java").read_text()
 gradle=Path("app/build.gradle").read_text()
@@ -56,6 +57,13 @@ checks={
       'persistSourceV918(activePlaylistV918,new ArrayList<>(channels))' in catalog,
   "Only active source can trigger post-import EPG":
       'if(store.isPlaylistActiveV99(source.id)&&' in wizard,
+  "Local M3U file imports also release inactive source memory":
+      'store.suspendLibraryForImportV918();' in localSync
+      and 'store.restoreLibraryAfterImportV918();' in localSync,
+  "Local file importer reports success only after resident cache restored":
+      localSync.index('store.restoreLibraryAfterImportV918();') <
+      localSync.index('else callback(callback,countV918'),
+
   "Single-choice radio replaces multi-select and removes Enable all":
       '.setSingleChoiceItems(labels,selected' in main
       and 'setMultiChoiceItems(labels,enabled' not in main
