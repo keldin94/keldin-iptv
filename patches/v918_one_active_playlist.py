@@ -459,6 +459,49 @@ def wizard(s):
     return s
 modify("net/PlaylistWizardV6.java",wizard)
 
+def local_import(s):
+    begin=s.index("    public void importLocal(Uri documentUri, PlaylistSource source, Callback callback) {")
+    end=s.index("    public void refresh(PlaylistSource source, Callback callback) {",begin)
+    original=s[begin:end]
+    if "M3uParser.parse(" not in original or "store.updateChannels(" not in original:
+        raise AssertionError("local importer has changed")
+    method='''    public void importLocal(Uri documentUri, PlaylistSource source, Callback callback) {
+        pool.execute(()->{
+            M3uParser.Result importedV918=null;
+            int countV918=0;
+            String errorV918=null;
+            // A local file import can also contain 100k+ items: do not
+            // retain the old channel list while parsing another large one.
+            store.suspendLibraryForImportV918();
+            try(InputStream input=context.getContentResolver().openInputStream(documentUri)){
+                if(input==null)throw new IOException("Cannot read selected M3U file");
+                importedV918=M3uParser.parse(
+                    new BufferedReader(new InputStreamReader(input,StandardCharsets.UTF_8)),
+                    source.id,"https://localhost/");
+                if(importedV918.channels.isEmpty())
+                    throw new IOException("M3U file contains no supported channels");
+                source.lastUpdated=System.currentTimeMillis();
+                store.putSource(source);
+                store.updateChannels(source.id,importedV918.channels);
+                countV918=importedV918.channels.size();
+            }catch(Exception failure){
+                errorV918=failure.getMessage()==null?
+                    "Could not import the playlist":failure.getMessage();
+            }finally{
+                if(importedV918!=null)importedV918.channels.clear();
+                try{store.restoreLibraryAfterImportV918();}
+                catch(Exception failure){
+                    if(errorV918==null)errorV918="Could not restore the active playlist";
+                }
+            }
+            if(errorV918!=null)callback(callback,0,"",errorV918);
+            else callback(callback,countV918,"EPG nije učitan",null);
+        });
+    }
+'''
+    return s[:begin]+method+s[end:]
+modify("net/PlaylistSync.java",local_import)
+
 p=Path("app/build.gradle")
 g=p.read_text()
 assert "versionCode 917" in g and "versionName '0.9.17'" in g
