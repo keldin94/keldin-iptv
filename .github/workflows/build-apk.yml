@@ -343,6 +343,9 @@ jobs:
           python3 patches/v917_import_reliability.py
           python3 patches/v917_auto_epg.py
 
+      - name: Inspect multi-playlist startup memory and source controls
+        run: python3 tests/v918_startup_inspect.py
+
       - name: Test five original themes, KELDIN Studio, EPG and M3U import safety
         run: python3 tests/v917_regression.py
 
