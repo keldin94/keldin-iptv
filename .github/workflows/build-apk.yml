@@ -343,9 +343,6 @@ jobs:
           python3 patches/v917_import_reliability.py
           python3 patches/v917_auto_epg.py
 
-      - name: Inspect multi-playlist startup memory and source controls
-        run: python3 tests/v918_startup_inspect.py
-
       - name: Test five original themes, KELDIN Studio, EPG and M3U import safety
         run: python3 tests/v917_regression.py
 
@@ -360,6 +357,12 @@ jobs:
             app/src/main/java/com/keldin/iptv/net/EpgParser.java \
             tests/EpgAutoV917Test.java
           java -cp /tmp/v917-epg-test EpgAutoV917Test
+
+      - name: Activate single-source memory-safe playlist mode v0.9.18
+        run: python3 patches/v918_one_active_playlist.py
+
+      - name: Verify one resident playlist and non-destructive catalog switching
+        run: python3 tests/v918_one_active_regression.py
 
       - name: Test EX YU live category with 54 HBO and CineStar sample channels
         shell: bash
