@@ -42,6 +42,9 @@ checks={
   'catch(RuntimeException error)' in main
   and 'page="Moje liste";' in main
   and 'showLists();' in main,
+"Invalid empty playlist cannot replace the last playable source":
+  'if(selected.isEmpty())' in catalog
+  and 'Playlist has no stored channels' in catalog,
 "No changes to stored playlists or signed package identity":
   'activePlaylistIdV918' in catalog
   and "applicationId 'com.keldin.iptv'" in gradle,
