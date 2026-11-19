@@ -44,7 +44,8 @@ public final class PagedLiveGridV920 {
         all=channels==null?Collections.emptyList():channels;
         int n=all.size();
         int selected=n==0?0:Math.max(0,Math.min(n-1,focus));
-        first=Math.max(0,selected-PAGE/3);
+        first=Math.min(Math.max(0,selected-PAGE/3),
+            Math.max(0,n-MAX_DISPLAYED));
         end=Math.min(n,first+MAX_DISPLAYED);
         adapter.setItems(new ArrayList<>(all.subList(first,end)));
         grid.scrollToPosition(Math.max(0,selected-first));
