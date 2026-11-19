@@ -22,6 +22,19 @@ def store(s):
     return s
 edit("data/CatalogStore.java",store)
 
+def active_source(s):
+    s=one(s,
+      '''        ArrayList<Channel> selected=readPlaylistV918(id);
+        // Commit to UI only after the entire requested source was read.''',
+      '''        ArrayList<Channel> selected=readPlaylistV918(id);
+        if(selected.isEmpty())
+            throw new java.io.IOException(
+                "Playlist has no stored channels. Open Playlists and Sync it first.");
+        // Commit to UI only after the entire requested source was read.''',
+      "never switch to a playlist with an empty or incomplete saved catalogue")
+    return s
+edit("data/CatalogStore.java",active_source)
+
 def main(s):
     # On an enormous M3U this used to copy every VOD movie/series item,
     # classify it and construct two group indexes on the main thread
