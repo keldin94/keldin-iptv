@@ -364,6 +364,16 @@ jobs:
       - name: Verify one resident playlist and non-destructive catalog switching
         run: python3 tests/v918_one_active_regression.py
 
+      - name: Apply v0.9.20 low-memory Live TV grid and EPG safety
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp patches/PagedLiveGridV920.java app/src/main/java/com/keldin/iptv/ui/PagedLiveGridV920.java
+          python3 patches/v920_live_grid_stability.py
+
+      - name: Verify bounded grid paging, focus return and TV-only background index
+        run: python3 tests/v920_live_grid_regression.py
+
       - name: Audit real Live TV UI crash path, adapter and storage
         run: python3 tests/v920_live_grid_audit.py
 
