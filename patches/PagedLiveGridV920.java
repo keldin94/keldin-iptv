@@ -49,6 +49,9 @@ public final class PagedLiveGridV920 {
         adapter.setItems(new ArrayList<>(all.subList(first,end)));
         grid.scrollToPosition(Math.max(0,selected-first));
     }
+    public int localIndex(int absolute){
+        return Math.max(0,Math.min(Math.max(0,end-first-1),absolute-first));
+    }
     public int total(){return all.size();}
     public int inMemoryCards(){return end-first;}
 
