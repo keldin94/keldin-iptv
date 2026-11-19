@@ -364,6 +364,9 @@ jobs:
       - name: Verify one resident playlist and non-destructive catalog switching
         run: python3 tests/v918_one_active_regression.py
 
+      - name: Audit real Live TV UI crash path, adapter and storage
+        run: python3 tests/v920_live_grid_audit.py
+
       - name: Test EX YU live category with 54 HBO and CineStar sample channels
         shell: bash
         run: |
