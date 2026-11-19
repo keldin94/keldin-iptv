@@ -50,6 +50,11 @@ def main(s):
                 runOnUiThread(()->{''',
       "index Live TV in background before Home displayed")
     s=one(s,
+      '''        for(Channel c:store.channels())if("LIVE".equals(c.kind))live.add(c);''',
+      '''        for(Channel c:store.liveChannelsForSourceV910(
+                store.activePlaylistIdV918()))live.add(c);''',
+      "TV Guide uses only indexed active broadcast channels")
+    s=one(s,
       '''        ChannelAdapter liveAdapter=null;
         PosterAdapterV6 posterAdapter=null;
         if(isPosters){
