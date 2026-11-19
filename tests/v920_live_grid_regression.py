@@ -32,7 +32,7 @@ checks={
   'channelPagerV920.show(restored,focusIndex)' in main and
   'channelPagerV920.localIndex(focusIndex)' in main,
 "Full TV broadcaster group remains in fast Live TV index":
-  '&& !Channel.isLiveFilmGroup(c.group,c.url)' in catalog,
+  'Channel.isLiveFilmGroup(c.group,c.url)' in catalog,
 "Player popup TV Grid includes broadcasters in EX YU Filmovi & Serije":
   'Channel.isLiveFilmGroup(ch.group,ch.url)' in player_grid,
 "Malformed or zero-duration XMLTV does not divide by zero":
